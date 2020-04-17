@@ -1,4 +1,15 @@
 # PostingApp
+
+## Contributing
+
+### Pre-requisites
+
+All you need is [_yarn_](https://yarnpkg.com/en/docs/install) 💙
+
+Yarn can be installed with the link above (recommended) or using npm with `npm install -g yarn`
+Lerna can be installed using npm with `npm install -g lerna`
+(might require sudo if you're on macOS).
+
 ### Setup
 
 Posting is actually a monorepo containing several workspaces (`/packages`). It utilizes[ yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and lerna(https://lerna.js.org/) to manage dependencies and workspaces and handle cross-dependencies.
