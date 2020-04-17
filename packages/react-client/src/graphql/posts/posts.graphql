@@ -1,0 +1,14 @@
+query Posts {
+    posts {
+        id
+        title
+        postType
+        description
+        createdAt
+        videoUrl
+        user {
+            email
+            name
+        }
+    }
+}

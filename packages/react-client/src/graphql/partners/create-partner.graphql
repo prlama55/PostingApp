@@ -1,0 +1,32 @@
+mutation CreatePartner(
+    $userId: String!
+    $name: String!
+    $emails: String!
+    $partnerId: String!
+    $payerId: String!
+    $clientId: String!
+    $verifiedAccount: String!
+) {
+    createPartner(
+        userId: $userId
+        name: $name
+        emails: $emails
+        partnerId: $partnerId
+        payerId: $payerId
+        clientId: $clientId
+        verifiedAccount: $verifiedAccount
+    ) {
+        id
+        name
+        emails
+        partnerId
+        createdAt
+        payerId
+        clientId
+        verifiedAccount
+        user {
+            email
+            name
+        }
+    }
+}

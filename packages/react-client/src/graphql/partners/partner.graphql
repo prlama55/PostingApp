@@ -1,0 +1,16 @@
+query Partner {
+    partners {
+        id
+        name
+        emails
+        partnerId
+        createdAt
+        payerId
+        clientId
+        verifiedAccount
+        user {
+            email
+            name
+        }
+    }
+}

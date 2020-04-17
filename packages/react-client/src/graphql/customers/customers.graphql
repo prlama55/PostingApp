@@ -1,0 +1,15 @@
+query Customers {
+    customers {
+        id
+        name
+        emails
+        customerId
+        createdAt
+        payerId
+        verifiedAccount
+        user {
+            email
+            name
+        }
+    }
+}

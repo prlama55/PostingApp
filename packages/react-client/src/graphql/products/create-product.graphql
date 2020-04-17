@@ -1,0 +1,24 @@
+mutation CreateProduct(
+    $partnerId: String!
+    $name: String!
+    $price: Float!
+    $description: String!
+) {
+    createProduct(
+        partnerId: $partnerId
+        name: $name
+        price: $price
+        description: $description
+    ) {
+        id
+        name
+        price
+        description
+        createdAt
+        partner {
+            id
+            clientId
+            name
+        }
+    }
+}

@@ -1,0 +1,14 @@
+query Products {
+    products {
+        id
+        name
+        price
+        description
+        createdAt
+        partner {
+            id
+            clientId
+            name
+        }
+    }
+}

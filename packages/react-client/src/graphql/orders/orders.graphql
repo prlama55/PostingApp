@@ -1,0 +1,22 @@
+query Orders {
+    orders {
+        id
+        name
+        price
+        description
+        createdAt
+        partner {
+            id
+            clientId
+            name
+        }
+        customer {
+            id
+            name
+        }
+        product {
+            id
+            name
+        }
+    }
+}

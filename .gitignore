@@ -1,0 +1,6 @@
+/packages/graphql-api/dist/
+/packages/graphql-api/node_modules/
+/packages/react-client/build/
+/packages/react-client/node_modules/
+/.idea/
+/node_modules/

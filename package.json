@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "text-video-posting-app",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd packages/react-client && yarn start",
+    "server": "cd packages/graphql-api && yarn start",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "lerna": "^3.10.7",
+    "concurrently": "^5.1.0"
+  }
+}

@@ -1,0 +1,30 @@
+mutation CreateCustomer(
+    $userId: String!
+    $name: String!
+    $emails: String!
+    $customerId: String!
+    $payerId: String!
+    $clientId: String!
+    $verifiedAccount: String!
+) {
+    createCustomer(
+        userId: $userId
+        name: $name
+        emails: $emails
+        customerId: $customerId
+        payerId: $payerId
+        verifiedAccount: $verifiedAccount
+    ) {
+        id
+        name
+        emails
+        customerId
+        createdAt
+        payerId
+        verifiedAccount
+        user {
+            email
+            name
+        }
+    }
+}
