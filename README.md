@@ -38,7 +38,7 @@ if you wish to see verbose builds and testing, you can cd into a package and run
 
 | Result                                            | Command                                                                                                             |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Starts a Dev server                               | `yarn start` (admin-portal-react only)                                                                              |                                                                                        |
+| Starts a Dev server                               | `yarn start`                                                                             |                                                                                        |
 | adds or removes 3rd party dependency to workspace | `yarn add/remove <3rd party dependency>`                                                                            |
 
 Note: Do not add package dependencies to the monorepo root package.json, add the dependency to the necessary workspace
