@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "text-video-posting-app",
+  "name": "posting-app",
   "version": "1.0.0",
   "scripts": {
     "client": "cd packages/react-client && yarn start",
@@ -13,5 +13,22 @@
   "devDependencies": {
     "lerna": "^3.10.7",
     "concurrently": "^5.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prlama55/PostingApp.git"
+  },
+  "keywords": [
+    "text",
+    "video",
+    "api",
+    "graphql",
+    "posting"
+  ],
+  "author": "Padma Raj Lama",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prlama55/PostingApp/issues"
+  },
+  "homepage": "https://github.com/prlama55/PostingApp#readme"
 }
