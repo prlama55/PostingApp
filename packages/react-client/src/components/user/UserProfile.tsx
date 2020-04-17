@@ -4,14 +4,16 @@ import {
   withStyles,
   WithStyles,
   Grid,
-  TextField,
+  TextField, Button,
 } from '@material-ui/core'
 import {RouteComponentProps} from 'react-router-dom'
-import PayPalAuthButton from "../premitive/PayPalAuthButton";
 import queryString from 'query-string'
 import qs from 'qs'
 import axios, {AxiosRequestConfig} from 'axios'
-import {paypalConfigOption, PAYPAL_USER_URL, PAYPAL_CREDENTIAL, PAYPAL_TOKEN_URL} from "../../config/config";
+import {PAYPAL_USER_URL, PAYPAL_CREDENTIAL, PAYPAL_TOKEN_URL} from "../../config/config";
+import {AppCredential, getAppCredential} from "../../config/accessToken";
+import {useCreatePartnerMutation} from "../../graphql";
+import AppAlert, {AppAlertProps} from "../premitive/AppAlert";
 
 
 const styles = (theme: any) => ({
@@ -49,37 +51,40 @@ const styles = (theme: any) => ({
 })
 type Props = RouteComponentProps & WithStyles
 interface RegisterState {
-  user_id: string
-  payer_id: string
-  verified_account: string
-  emails: any[]
-  code: string
+  userId: string
   name: string
-  address: any
+  emails: string
+  partnerId: string
+  payerId: string
+  clientId: string
+  verifiedAccount: string
 }
 const UserProfile: React.FC<Props> = (props: Props) => {
+  const [createPartner] = useCreatePartnerMutation()
   const initialState: RegisterState = {
-    emails: [],
-    payer_id: '',
-    code: '',
-    verified_account: '',
-    user_id: '',
+    userId: '',
     name: '',
-    address: {},
+    emails: '',
+    partnerId: '',
+    payerId: '',
+    clientId: '',
+    verifiedAccount:'',
   }
-
+  const initialAlert:AppAlertProps={
+    message:'',
+    alertType:'success'
+  }
+  // @ts-ignore
+  let userCredential: AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
   const [state, setState] = useState(initialState)
+  const [alertMessage, setAlertMessage] = useState(initialAlert)
   const setValue = (
       event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const field = event.target.getAttribute('id') as string
     const value = event.target.value as string
-    const data: RegisterState = { ...initialState }
-    let newState = Object.create(data)
-    newState[field] = value
     setState({
       ...state,
-      ...newState,
+      clientId: value,
     })
   }
 
@@ -98,31 +103,72 @@ const UserProfile: React.FC<Props> = (props: Props) => {
     data: qs.stringify(reqData),
     url: PAYPAL_TOKEN_URL,
   };
-  axios(options).then(res=>{
-    console.log("data====",res.data)
-    const data= res.data
-    const userOptions:AxiosRequestConfig = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer  ${data.access_token}`
-      },
-      url:PAYPAL_USER_URL,
-    };
-    axios(userOptions).then(userData=>{
-      console.log("userData=====",userData)
-      // const data= userData.data
-      // setState({
-      //   ...state,
-      //   ...newState,
-      // })
-    }).catch(err=>console.log(err))
-  }).catch(err=>{
-    console.log("err===", err)
-  }).finally(function () {
-    // always executed
-  });
+  let userData: RegisterState
 
+  const submit = async () => {
+    if(!state.clientId){
+      setAlertMessage({
+        alertType: 'error',
+        message: 'Please enter PayPal clientID.',
+      })
+    }else{
+      axios(options).then(res=>{
+        const data= res.data
+        const userOptions:AxiosRequestConfig = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer  ${data.access_token}`
+          },
+          url:PAYPAL_USER_URL,
+        };
+        axios(userOptions).then(usrData=>{
+          console.log("userData=====",usrData)
+          const data: any= usrData.data
+          let email=''
+          const {user_id,name, payer_id, verified_account, emails}= data
+          // const {street_address, locality, region, postal_code, country}= address
+          emails.map((e: any)=>{
+            email= email.concat(','+e.value)
+          })
+          userData={
+            ...state,
+            userId:userCredential.id,
+            name:name,
+            emails: email,
+            partnerId: user_id,
+            payerId: payer_id,
+            verifiedAccount:verified_account,
+          } as RegisterState
+        }).catch(err=>{
+          console.log(err)
+          setAlertMessage({
+            alertType: 'error',
+            message: 'Could not verify PayPal. Please! try again',
+          })
+        })
+      }).catch(err=>{
+        console.log("err===", err)
+        setAlertMessage({
+          alertType: 'error',
+          message: 'Could not verify PayPal. Please! try again',
+        })
+      }).finally(async function () {
+        // always executed
+        await createPartner({
+          variables: {
+            ...userData,
+          },
+        })
+        setAlertMessage({
+          alertType: 'success',
+          message: 'Your business profile has been updated..',
+        })
+      });
+    }
+
+
+  }
   return (
       <div className={classes.app}>
         <Grid container spacing={8}>
@@ -143,51 +189,20 @@ const UserProfile: React.FC<Props> = (props: Props) => {
                       xs={true}
                       className={classes.title}
                   >
-                    User Detail
+                    Business User Detail
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={8} alignItems="flex-end">
+                  <Grid item md={true} sm={true} xs={true}>
+                    {alertMessage && <AppAlert {...alertMessage}/>}
                   </Grid>
                 </Grid>
                 <Grid container spacing={8} alignItems="flex-end">
                   <Grid item md={true} sm={true} xs={true}>
                     <TextField
-                        id="email"
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        autoFocus
-                        required
-                        onChange={setValue}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={8} alignItems="flex-end">
-                  <Grid item md={true} sm={true} xs={true}>
-                    <TextField
-                        id="password"
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        required
-                        onChange={setValue}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={8} alignItems="flex-end">
-                  <Grid item md={true} sm={true} xs={true}>
-                    <TextField
-                        id="firstName"
-                        label="First Name"
-                        type="text"
-                        fullWidth
-                        required
-                        onChange={setValue}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={8} alignItems="flex-end">
-                  <Grid item md={true} sm={true} xs={true}>
-                    <TextField
-                        id="lastName"
-                        label="Last Name"
+                        id="clientId"
+                        label="ClientID"
                         type="text"
                         fullWidth
                         required
@@ -196,7 +211,14 @@ const UserProfile: React.FC<Props> = (props: Props) => {
                   </Grid>
                 </Grid>
                 <Grid container justify="flex-end" style={{ marginTop: '10px' }}>
-                  <PayPalAuthButton {...paypalConfigOption}/>
+                  <Button
+                      variant="outlined"
+                      color="primary"
+                      style={{ textTransform: 'none' }}
+                      onClick={submit}
+                  >
+                    Save
+                  </Button>
                 </Grid>
               </div>
             </Paper>

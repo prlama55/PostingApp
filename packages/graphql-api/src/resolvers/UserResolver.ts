@@ -18,7 +18,6 @@ export class UserResolver {
     };
 
     @FieldResolver()
-    // @UseMiddleware(isAuth)
     async name(@Root() parent: User){
         return `${parent._doc.firstName} ${parent._doc.lastName}`
     }
@@ -34,19 +33,22 @@ export class UserResolver {
         @Arg("email") email: string,
         @Arg("password") password: string,
         @Arg("firstName") firstName: string,
-        @Arg("lastName") lastName: string
-        ) {
+        @Arg("lastName") lastName: string,
+        @Arg("userType") userType: string
+    ) {
         const hashPass= await hash(password,12)
         const user = (await UserModel.create({
             email,
             firstName,
             lastName,
+            userType,
             password: hashPass
         })).save();
         return user? true: false;
     };
 
     @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
     async deleteUser(@Arg("id") id: string) {
         await UserModel.deleteOne({id});
         return true;

@@ -28,11 +28,12 @@ type LoginResponse {
   role: String!
   accessToken: String!
   name: String!
+  hasBusiness: Boolean!
 }
 
 type Mutation {
   revokeRefreshToken(userId: String!): Boolean!
-  register(lastName: String!, firstName: String!, password: String!, email: String!): Boolean!
+  register(userType: String!, lastName: String!, firstName: String!, password: String!, email: String!): Boolean!
   deleteUser(id: String!): Boolean!
   createPost(videoUrl: String!, description: String!, title: String!, postType: String!, userId: String!): Post!
   deletePost(id: String!): Boolean!

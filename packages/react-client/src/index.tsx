@@ -25,11 +25,12 @@ const requestLink = new ApolloLink(
       let handle: any
       Promise.resolve(operation)
         .then(operation => {
-          const accessToken = getAppCredential().accessToken
-          if (accessToken) {
+          // @ts-ignore
+          let userCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
+          if (userCredential.accessToken) {
             operation.setContext({
               headers: {
-                authorization: `bearer ${accessToken}`,
+                authorization: `bearer ${userCredential.accessToken}`,
               },
             })
           }
@@ -83,6 +84,15 @@ const client = new ApolloClient({
       handleError: err => {
         console.warn('Your refresh token is invalid. Try to again')
         console.error(err)
+        setAppCredential({
+          id: '',
+          accessToken: '',
+          email: '',
+          role: '',
+          name: '',
+          hasBusiness: false,
+        })
+        localStorage.removeItem('user')
       },
     }),
     onError(({ graphQLErrors, networkError }) => {

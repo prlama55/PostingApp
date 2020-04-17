@@ -1,20 +1,24 @@
-import { Resolver, Mutation, Arg, Query,  FieldResolver, Root } from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
 import {User, UserModel} from "../models/User";
 import {Partner, PartnerModel} from "../models/Partner";
+import {isAuth} from "../authorization/auth";
 
 @Resolver(_of => Partner)
 export class PartnerResolver {
 
+    @UseMiddleware(isAuth)
     @Query(_returns => Partner, { nullable: false})
     async partner(@Arg("id") id: string){
         return PartnerModel.findById({_id: id});
     };
 
+    @UseMiddleware(isAuth)
     @Query(() => [Partner])
     async partners(){
         return PartnerModel.find();
     };
 
+    @UseMiddleware(isAuth)
     @Mutation(() => Partner)
     async createPartner(
         @Arg('userId') userId: string,
@@ -37,6 +41,7 @@ export class PartnerResolver {
         return partner;
     };
 
+    @UseMiddleware(isAuth)
     @Mutation(() => Boolean)
     async deletePartner(@Arg("id") id: string) {
         await PartnerModel.deleteOne({id});

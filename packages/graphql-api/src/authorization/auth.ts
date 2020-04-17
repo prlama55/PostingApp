@@ -9,6 +9,7 @@ import {
   REFRESH_TOKEN_LIFETIME,
 } from '../config/config'
 import { User, UserModel } from '../models/User'
+import {PartnerModel} from "../models/Partner";
 
 export const isAuth: MiddlewareFn<AppContext> = ({ context }, next) => {
   const authorization = context.req.headers['authorization']
@@ -77,17 +78,7 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       id: '',
     })
   }
-  const user = (await UserModel.findById(payload.userId)) as User
-  if (user.tokenVersion !== payload.tokenVersion) {
-    res.send({
-      success: false,
-      email: '',
-      accessToken: '',
-      role: '',
-      name: '',
-      id: '',
-    })
-  }
+  const user = await UserModel.findById(payload.userId)
   if (!user) {
     res.send({
       success: false,
@@ -98,15 +89,38 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       id: '',
     })
   }
-  const accessToken = await createAccessToken(user)
-  const refreshToken = await createRefreshToken(user)
-  sendRefreshToken(res, refreshToken)
-  res.send({
-    success: true,
-    email: user.email,
-    accessToken: accessToken,
-    role: 'Admin',
-    name: user.firstName,
-    id: user.id,
-  })
+  else if (user.tokenVersion !== payload.tokenVersion) {
+    res.send({
+      success: false,
+      email: '',
+      accessToken: '',
+      role: '',
+      name: '',
+      id: '',
+    })
+  }else{
+    const accessToken = await createAccessToken(user)
+    const refreshToken = await createRefreshToken(user)
+    sendRefreshToken(res, refreshToken)
+    let hasBusiness: boolean= false
+    if(user.userType==='BusinessUser'){
+      PartnerModel.findOne({userId:user.id}).then(partner=>{
+        if(partner)hasBusiness= true
+      }).catch(_err=>{
+        console.error(_err)
+      })
+    }
+
+    res.send({
+      success: true,
+      email: user.email,
+      accessToken: accessToken,
+      role: user.userType?user.userType:'AdminUser',
+      hasBusiness: hasBusiness,
+      name: user.firstName,
+      id: user.id,
+    })
+  }
+
+
 }

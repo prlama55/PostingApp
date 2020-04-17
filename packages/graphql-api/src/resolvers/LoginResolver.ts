@@ -8,13 +8,14 @@ import {
   createRefreshToken,
   sendRefreshToken,
 } from '../authorization/auth'
+import { PartnerModel} from "../models/Partner";
 @Resolver(_of => User)
 export class LoginResolver {
   @Mutation(() => LoginResponse, { nullable: true })
   async login(
-    @Arg('email') email: string,
-    @Arg('password') password: string,
-    @Ctx() { res }: AppContext
+      @Arg('email') email: string,
+      @Arg('password') password: string,
+      @Ctx() { res }: AppContext
   ): Promise<LoginResponse> {
     const user = await UserModel.findOne({ email })
     if (!user) {
@@ -28,10 +29,16 @@ export class LoginResolver {
     const refreshToken = await createRefreshToken(user)
     const accessToken = await createAccessToken(user)
     sendRefreshToken(res, refreshToken)
+    let hasBusiness: boolean= false
+    if(user.userType==='BusinessUser'){
+      const partner= await PartnerModel.findOne({userId:user.id})
+      if(partner) hasBusiness= true
+    }
     return {
       email: user.email,
       accessToken: accessToken,
-      role: 'Admin',
+      role: user.userType?user.userType:'AdminUser',
+      hasBusiness: hasBusiness,
       name: user.firstName,
       id: user.id,
     }

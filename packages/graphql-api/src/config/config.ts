@@ -8,7 +8,7 @@ export const {
     ACCESS_TOKEN_SECRET='Nepal123',
     REFRESH_TOKEN_SECRET='RNepal123',
     ACCESS_TOKEN_LIFETIME='15m',
-    REFRESH_TOKEN_LIFETIME='7d'
+    REFRESH_TOKEN_LIFETIME='1d'
 }= process.env
 export const MONGO_URL = `mongodb://${DB_HOST}:${DB_POST}/${DB_NAME}`
 export const IS_PROD = NODE_ENV==='production'

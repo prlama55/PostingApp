@@ -26,7 +26,9 @@ const Logout: React.FC<RouteComponentProps> = (props) => {
           email: '',
           role: '',
           name: '',
+          hasBusiness: false,
         })
+        localStorage.removeItem('user')
         client?.resetStore()
         props.history.push('/login')
       }}
@@ -106,7 +108,9 @@ class NavBar extends React.Component<Props, State> {
     const { classes } = this.props
     const { tab, anchorEl } = this.state
     const open = Boolean(anchorEl)
-    const { email, name } = getAppCredential()
+    // @ts-ignore
+    let userCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
+    const { email, name } = userCredential
     return (
       <div className={classes.root}>
         <AppBar position="fixed">

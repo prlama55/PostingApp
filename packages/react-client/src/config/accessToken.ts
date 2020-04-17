@@ -4,13 +4,15 @@ export interface AppCredential {
   role: string
   name: string
   id: string
+  hasBusiness: boolean
 }
 let appCredential: AppCredential = {
   accessToken: '',
   email: '',
   role: '',
   name: '',
-  id: ''
+  id: '',
+  hasBusiness: false
 }
 
 export const setAppCredential = (credential: AppCredential) => {

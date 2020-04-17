@@ -83,6 +83,7 @@ const Users: React.FC<Props> = props => {
           variables: {
             ...newData,
             password: password,
+            userType: "BusinessUser",
           },
         })
         const users: Users[] = state.users.length > 0 ? state.users : userList

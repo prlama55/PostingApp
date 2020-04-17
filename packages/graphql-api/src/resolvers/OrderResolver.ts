@@ -1,22 +1,26 @@
-import { Resolver, Mutation, Arg, Query,  FieldResolver, Root } from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
 import {Order, OrderModel} from "../models/Order";
 import {Partner, PartnerModel} from "../models/Partner";
 import {Customer, CustomerModel} from "../models/Customer";
 import {Product, ProductModel} from "../models/Product";
+import {isAuth} from "../authorization/auth";
 
 @Resolver(_of => Order)
 export class OrderResolver {
 
+    @UseMiddleware(isAuth)
     @Query(_returns => Order, { nullable: false})
     async order(@Arg("id") id: string){
         return OrderModel.findById({_id: id});
     };
 
+    @UseMiddleware(isAuth)
     @Query(() => [Order])
     async orders(){
         return OrderModel.find();
     };
 
+    @UseMiddleware(isAuth)
     @Mutation(() => Order)
     async createOrder(
         @Arg('partnerId') partnerId: string,
@@ -37,6 +41,7 @@ export class OrderResolver {
         return Order;
     };
 
+    @UseMiddleware(isAuth)
     @Mutation(() => Boolean)
     async deleteOrder(@Arg("id") id: string) {
         await OrderModel.deleteOne({id});

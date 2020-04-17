@@ -1,20 +1,24 @@
-import { Resolver, Mutation, Arg, Query,  FieldResolver, Root } from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
 import {Post, PostModel} from "../models/Post";
 import {User, UserModel} from "../models/User";
+import {isAuth} from "../authorization/auth";
 
 @Resolver(_of => Post)
 export class PostResolver {
 
+    @UseMiddleware(isAuth)
     @Query(_returns => Post, { nullable: false})
     async post(@Arg("id") id: string){
         return PostModel.findById({_id: id});
     };
 
+    @UseMiddleware(isAuth)
     @Query(() => [Post])
     async posts(){
         return PostModel.find();
     };
 
+    @UseMiddleware(isAuth)
     @Mutation(() => Post)
     async createPost(
         @Arg('userId') userId: string,
@@ -33,6 +37,7 @@ export class PostResolver {
         return product;
     };
 
+    @UseMiddleware(isAuth)
     @Mutation(() => Boolean)
     async deletePost(@Arg("id") id: string) {
         await PostModel.deleteOne({id});

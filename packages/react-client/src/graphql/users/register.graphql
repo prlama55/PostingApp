@@ -3,11 +3,13 @@ mutation Register(
   $password: String!
   $firstName: String!
   $lastName: String!
+  $userType: String!
 ) {
   register(
     email: $email
     password: $password
     firstName: $firstName
     lastName: $lastName
+    userType: $userType
   )
 }

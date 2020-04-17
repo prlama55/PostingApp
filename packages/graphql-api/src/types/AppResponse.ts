@@ -16,4 +16,7 @@ export class LoginResponse {
 
     @Field()
     name: string
+
+    @Field()
+    hasBusiness: boolean
 }

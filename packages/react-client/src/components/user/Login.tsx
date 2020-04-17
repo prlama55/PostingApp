@@ -84,6 +84,8 @@ const Login: React.FC<Props> = ({ classes, history }) => {
       setAppCredential({
         ...response.data.login,
       } as AppCredential)
+      console.log("")
+      localStorage.setItem('user', JSON.stringify(response.data.login))
     }
     history.push('/')
   }

@@ -44,3 +44,31 @@ if you wish to see verbose builds and testing, you can cd into a package and run
 Note: Do not add package dependencies to the monorepo root package.json, add the dependency to the necessary workspace
 
 Please make sure your code doesn't break any linter rules and passes all unit tests before submitting a PR.
+
+### Updating fork(Featured branch)
+
+1. ####Open Terminal.
+2. ####List the current configured remote repository for your fork.
+    1. `$ git remote -v`
+    2. `> origin  https://github.com/YOUR_USERNAME/YOUR_FORK.git (fetch)`
+    3. `> origin  https://github.com/YOUR_USERNAME/YOUR_FORK.git (push)`
+3. ####Specify a new remote upstream repository that will be synced with the fork.
+    `$ git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git`
+4. ####Verify the new upstream repository you've specified for your fork.
+    1. `$ git remote -v`
+    2. `> origin    https://github.com/YOUR_USERNAME/YOUR_FORK.git (fetch)`
+    3. `> origin    https://github.com/YOUR_USERNAME/YOUR_FORK.git (push)`
+    4. `> upstream  https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git (fetch)`
+    5. `> upstream  https://github.com/ORIGINAL_OWNER/ORIGINAL_REPOSITORY.git (push)`
+    
+5. #### Cleanup featured branch(Forked branch)
+    1. #####Create a copy of your branch to cherry pick commits from
+        `git checkout -b <my-branch-name>-2`
+    2. #####Checkout develop and reset it to latest upstream (upstream being higi remote)
+        1. `git checkout master`
+        2. `git fetch upstream`
+        3. `git reset --hard upstream/master`
+    3. #####Reset feature branch from develop
+        1. `git checkout <my-branch-name>`
+        2. `git reset --hard upstream/master`
+    4. ##### Compare `<my-branch-name>-2` and add changes to `<my-branch-name>`
