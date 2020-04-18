@@ -79,5 +79,5 @@ Please make sure your code doesn't break any linter rules and passes all unit te
     1. `git checkout master`
     2. `git reset --hard upstream/master`
     3. `git push origin master`
-    4. `git checkput <my-branch-name>
+    4. `git checkput <my-branch-name>`
     5. `git merge master`
