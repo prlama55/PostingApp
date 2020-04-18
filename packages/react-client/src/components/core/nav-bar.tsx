@@ -71,8 +71,11 @@ interface State {
 class NavBar extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
+    const {location}= props
+    const {pathname}= location
+    console.log("location====",location)
     this.state = {
-      tab: '',
+      tab: pathname.replace('/',''),
       anchorEl: null,
     }
   }
@@ -80,10 +83,10 @@ class NavBar extends React.Component<Props, State> {
   handleChange = (_event: any, tab: any) => {
     this.setState({ tab })
     switch (tab) {
-      case 'user':
+      case 'users':
         this.props.history.push('/users')
         break
-      case 'post':
+      case 'posts':
         this.props.history.push('/posts')
         break
       default:
@@ -136,21 +139,14 @@ class NavBar extends React.Component<Props, State> {
                     scrollButtons="auto"
                   >
                     <Tab
-                        fullWidth
-                        icon={<HomeIcon />}
-                      label="Home"
-                      value="home"
-                      className={classes.tabItem}
-                    />
-                    <Tab
                       label="Users"
-                      value="user"
+                      value="users"
                       className={classes.tabItem}
                     />
 
                     <Tab
                       label="Posts"
-                      value="post"
+                      value="posts"
                       className={classes.tabItem}
                     />
                   </Tabs>

@@ -1,12 +1,12 @@
-import React, { useState, createRef } from 'react'
+import React, { useState } from 'react'
 import { Paper, Grid, withStyles, WithStyles } from '@material-ui/core'
-import MaterialTable, { Column } from 'material-table'
 import {
   useRegisterMutation,
   useUsersQuery,
 } from '../../graphql'
 import { RouteComponentProps } from 'react-router-dom'
-import randomstring from 'randomstring'
+import CustomTable from "../premitive/CustomTable";
+// import randomstring from 'randomstring'
 const styles = (theme: any) => ({
   app: {
     flexGrow: 1,
@@ -40,15 +40,13 @@ export interface Users {
 interface Row {
   users: Users[]
 }
-
-interface TableState {
-  columns: Array<Column<Users>>
-  users: Users[]
-}
-
+const columns=[
+  { title: 'Name', field: 'firstName' },
+  { title: 'Surname', field: 'lastName' },
+  { title: 'Email', field: 'email' },
+]
 type Props = RouteComponentProps<any> & WithStyles & Row
 const Users: React.FC<Props> = props => {
-  let tableRef = createRef();
   let userList: Users[] = []
   const { data }: any = useUsersQuery({
     fetchPolicy: 'network-only',
@@ -63,85 +61,64 @@ const Users: React.FC<Props> = props => {
       }
     })
   }
-  console.log("userList=====",userList)
-  const [state, setState] = useState<TableState>({
-    columns: [
-      { title: 'Name', field: 'firstName' },
-      { title: 'Surname', field: 'lastName' },
-      { title: 'Email', field: 'email' },
-    ],
-    users: [...userList],
-  })
+
+  const [getUsers, setUsers] = useState<Users[]>(userList)
   const [registerMutation] = useRegisterMutation()
 
-  const onAdd = async (newData: Users) =>
-    new Promise(resolve => {
+  const onAdd = async (newData: Users) =>{
+    return new Promise(resolve => {
       setTimeout(async () => {
-        resolve()
-        const password = randomstring.generate(7);
+        // const _password = randomstring.generate(7);
         await registerMutation({
           variables: {
             ...newData,
-            password: password,
-            userType: "BusinessUser",
+            password: 'AdminUser',
+            userType: "AdminUser",
           },
         })
-        const users: Users[] = state.users.length > 0 ? state.users : userList
+        let users: Users[] = getUsers.length > 0 ? getUsers : userList
         users.push(newData)
-        setState((prevState: TableState) => {
-          const users: Users[] = prevState.users.length > 0 ? prevState.users : userList
-          users.push(newData)
-          return { ...prevState, users }
-        })
-      }, 100)
+        setUsers(users)
+        resolve(newData)
+      }, 1000)
     })
+  }
 
-  const onRowUpdate = (newData: Users, oldData: any) =>
+
+  const onRowUpdate = (_newData: Users, _oldData: any) =>
     new Promise(resolve => {
       setTimeout(() => {
         resolve()
-        if (oldData) {
-          setState((prevState: TableState) => {
-            const users: Users[] = prevState.users.length > 0 ? prevState.users : userList
-            users[users.indexOf(oldData)] = newData
-            return { ...prevState, users }
-          })
-        }
       }, 100)
     })
 
-  const onRowDelete = (oldData: any) =>
+  const onRowDelete = (oldData: Users) =>
     new Promise(resolve => {
       setTimeout(() => {
-        resolve()
-        setState((prevState: TableState) => {
-          const users: Users[] = prevState.users.length > 0 ? prevState.users : userList
-          users.splice(users.indexOf(oldData), 1)
-          return { ...prevState, users }
+        const users: Users[] = getUsers.length > 0 ? getUsers : userList
+        const newData:Users[]= users.filter(data=>{
+          return data.email!==oldData.email
         })
-      }, 100)
+        setUsers(newData)
+        resolve(oldData)
+      }, 1000)
     })
 
   const { classes } = props
-  const { columns } = state
-  const users = [...state.users]
-  console.log("users====",users)
+  const users: Users[] = getUsers.length > 0 ? getUsers : userList
+
   return (
     <div className={classes.app}>
       <Grid container spacing={8}>
         <Grid item xs>
           <Paper className={classes.paper}>
-            <MaterialTable
-              tableRef={tableRef}
-              style={{ boxShadow: 'none' }}
-              title="Users"
-              columns={columns}
-              data={userList}
-              editable={{
-                onRowAdd: onAdd,
-                onRowUpdate: onRowUpdate,
-                onRowDelete: onRowDelete,
-              }}
+            <CustomTable
+                title="Users"
+                columns={columns}
+                data={users}
+                onAdd={onAdd}
+                onRowUpdate={onRowUpdate}
+                onRowDelete={onRowDelete}
             />
           </Paper>
         </Grid>

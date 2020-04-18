@@ -8,29 +8,22 @@ interface Props{
     onRowUpdate:(newData: any, oldData?: any) => Promise<any>;
     onRowDelete:(oldData: any) => Promise<any>;
 }
-
-interface State {
-    data: any[],
-}
-class CustomTable extends Component<Props, State>{
+class CustomTable extends Component<Props>{
     constructor(props: Props) {
         super(props);
-        this.state={
-            data: props.data
-        }
     }
 
     render(){
-        const {title, columns, onAdd, onRowUpdate, onRowDelete} = this.props
+        const {title, columns, onAdd, onRowDelete, data} = this.props
         return (
             <MaterialTable
                 style={{ boxShadow: 'none' }}
                 title={title}
                 columns={columns}
-                data={this.state.data}
+                data={data}
                 editable={{
                     onRowAdd: onAdd,
-                    onRowUpdate: onRowUpdate,
+                    // onRowUpdate: onRowUpdate,
                     onRowDelete: onRowDelete,
                 }}
             />

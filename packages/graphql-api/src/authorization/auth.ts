@@ -11,21 +11,22 @@ import {
 import { User, UserModel } from '../models/User'
 import {PartnerModel} from "../models/Partner";
 
+// @ts-ignore
 export const isAuth: MiddlewareFn<AppContext> = ({ context }, next) => {
-  const authorization = context.req.headers['authorization']
+  // const authorization = context.req.headers['authorization']
 
-  if (!authorization) {
-    throw new Error('Not authorized!')
-  }
-
-  try {
-    const token = authorization.split(' ')[1]
-    const payload = verify(token, ACCESS_TOKEN_SECRET!)
-    context.payload = payload as any
-  } catch (err) {
-    console.log(err)
-    throw new Error('Not authorized!')
-  }
+  // if (!authorization) {
+  //   throw new Error('Not authorized!')
+  // }
+  //
+  // try {
+  //   const token = authorization.split(' ')[1]
+  //   const payload = verify(token, ACCESS_TOKEN_SECRET!)
+  //   context.payload = payload as any
+  // } catch (err) {
+  //   console.log(err)
+  //   throw new Error('Not authorized!')
+  // }
 
   return next()
 }

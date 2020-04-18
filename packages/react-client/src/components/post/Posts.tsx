@@ -48,9 +48,9 @@ interface Row {
 }
 
 const columns=[
-    { title: 'User', field: 'userName' },
-    { title: 'PostType', field: 'postType' },
-    { title: 'CreatedAt', field: 'createdAt' },
+    { title: 'CreatedAt', field: 'createdAt', editable: 'never' },
+    { title: 'User', field: 'userName', editable: 'never' },
+    { title: 'PostType', field: 'postType', lookup: { 'text': 'Text','video': 'Video' }, initialEditValue:'text' },
     { title: 'Title', field: 'title' },
     { title: 'Description', field: 'description' },
     { title: 'Video Url', field: 'videoUrl' },
@@ -62,10 +62,10 @@ const Posts: React.FC<Props> = (props) => {
     const { data, loading }: any = usePostsQuery({
         fetchPolicy: 'network-only',
     })
-    const [getPosts, setPosts] = useState<PostType[]>(postList)
+
     if (!loading && data) {
-        postList = data?.posts.map((post: PostType) => {
-            return {
+        data?.posts.map((post: PostType) => {
+            postList.push({
                 id: post.id,
                 title:  post.title,
                 postType:  post.postType,
@@ -73,46 +73,39 @@ const Posts: React.FC<Props> = (props) => {
                 createdAt:  post.createdAt,
                 videoUrl:  post.videoUrl,
                 userName:  post.user.name,
-            }
+            } as PostType)
         })
     }
+    const [getPosts, setPosts] = useState(postList)
     const [postMutation] = useCreatePostMutation()
 
-    const onAdd = (newData: PostType) =>
-        new Promise(resolve => {
+    const onAdd = (newData: PostType) =>{
+        return new Promise(resolve => {
             setTimeout(async () => {
-            const {postType="",title="",description="",videoUrl=""} = newData
-            await postMutation({
-                variables: {
-                    postType,title,description,videoUrl,
-                    userId: appCredential.id
-                },
-                // update: (_store, { data }) => {
-                //     if (!data) {
-                //         return null;
-                //     }
-                //     // const {createPost}: any= data
-                //     // postList.push({
-                //     //     id: createPost.id,
-                //     //     title:  createPost.title,
-                //     //     postType:  createPost.postType,
-                //     //     description:  createPost.description,
-                //     //     createdAt:  createPost.createdAt,
-                //     //     videoUrl:  createPost.videoUrl,
-                //     //     userName:  createPost.user.name,
-                //     // } as PostType)
-                //     // console.log("data=====",data)
-                //     /// @ts-ignore
-                //
-                // }
-            })
-            const posts: PostType[] = getPosts.length>0? getPosts: postList
-            posts.push(newData)
-                postList.push(newData)
-                setPosts(posts)
-                resolve(posts)
+                const {postType="",title="",description="",videoUrl=""} = newData
+                const {data}=await postMutation({
+                    variables: {
+                        postType,title,description,videoUrl,
+                        userId: appCredential.id
+                    }
+                })
+                const {createPost}: any= data
+                const post= {
+                    id: createPost.id,
+                    title:  createPost.title,
+                    postType:  createPost.postType,
+                    description:  createPost.description,
+                    createdAt:  createPost.createdAt,
+                    videoUrl:  createPost.videoUrl,
+                    userName:  createPost.user.name,
+                } as PostType
+                const posts: PostType[] = getPosts.length>0? getPosts: postList
+                setPosts([...posts, ...[post]])
+                resolve(post)
             }, 1500);
         })
+    }
+
 
     const onRowUpdate = (newData: PostType, oldData: any) =>
         new Promise(resolve => {
@@ -124,16 +117,21 @@ const Posts: React.FC<Props> = (props) => {
             }
         })
 
-    const onRowDelete = (oldData: any) =>
-        new Promise(resolve => {
-            resolve()
+    const onRowDelete = (oldData: PostType) =>{
+        return new Promise(resolve => {
             const posts: PostType[] = getPosts.length>0? getPosts: postList
-            posts.splice(posts.indexOf(oldData), 1)
-            setPosts(posts)
+            const newData:PostType[]= posts.filter(data=>{
+                return data.id!==oldData.id
+            })
+            setPosts(newData)
+            resolve(oldData)
         })
+    }
+
 
     const { classes } = props
-    return data ? (
+    const posts: PostType[] = getPosts.length>0? getPosts: postList
+    return (
         <div className={classes.app}>
             <Grid container spacing={8}>
                 <Grid item xs>
@@ -149,20 +147,19 @@ const Posts: React.FC<Props> = (props) => {
                         {/*        onRowDelete: onRowDelete,*/}
                         {/*    }}*/}
                         {/*/>*/}
-                        <CustomTable
+                        {loading && <Loading/>}
+                        {!loading && <CustomTable
                             title="Posts"
                             columns={columns}
-                            data={postList}
+                            data={posts}
                             onAdd={onAdd}
                             onRowUpdate={onRowUpdate}
                             onRowDelete={onRowDelete}
-                        />
+                        />}
                     </Paper>
                 </Grid>
             </Grid>
         </div>
-    ):(
-        <Loading/>
     )
 }
 
