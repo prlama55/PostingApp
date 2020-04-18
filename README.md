@@ -71,4 +71,13 @@ Please make sure your code doesn't break any linter rules and passes all unit te
     3. #####Reset feature branch from develop
         1. `git checkout <my-branch-name>`
         2. `git reset --hard upstream/master`
+        3. `git checkput <my-branch-name>
+        4. `git reset --hard upstream/master`
     4. ##### Compare `<my-branch-name>-2` and add changes to `<my-branch-name>`
+    
+6. ####Update featured branch from upstream
+    1. `git checkout master`
+    2. `git reset --hard upstream/master`
+    3. `git push origin master`
+    4. `git checkput <my-branch-name>
+    5. `git merge master`
