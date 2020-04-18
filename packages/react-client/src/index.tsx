@@ -49,13 +49,14 @@ const requestLink = new ApolloLink(
       }
     })
 )
-
+const $appRoot=document.querySelector('#root')
 const client = new ApolloClient({
   link: ApolloLink.from([
     new TokenRefreshLink({
       accessTokenField: 'accessToken',
       isTokenValidOrUndefined: () => {
-        const token = getAppCredential()
+        // @ts-ignore
+        let token= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
         if (!token.accessToken) return true
         try {
           const { exp } = jwtDecode(token.accessToken)
@@ -75,7 +76,8 @@ const client = new ApolloClient({
         })
       },
       handleFetch: accessToken => {
-        const getToken = getAppCredential()
+        // @ts-ignore
+        let getToken= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
         setAppCredential({
           ...getToken,
           accessToken: accessToken,
@@ -83,13 +85,14 @@ const client = new ApolloClient({
       },
       handleError: err => {
         console.warn('Your refresh token is invalid. Try to again')
-        console.error(err)
+        console.error("err====",err)
         setAppCredential({
           id: '',
           accessToken: '',
           email: '',
           role: '',
           name: '',
+          businessUserId: '',
           hasBusiness: false,
         })
         localStorage.removeItem('user')
@@ -98,7 +101,10 @@ const client = new ApolloClient({
     onError(({ graphQLErrors, networkError }) => {
       console.log(graphQLErrors)
       console.log(networkError)
-      window.location.href='/error'+`/${networkError}/${graphQLErrors}`
+      let message=''
+      if(graphQLErrors!==undefined) message= graphQLErrors[0].message
+      if(networkError!==undefined) message= "Network Error"
+      window.location.href=`${window.location.href.split('?error')[0]}?error=${message}`
     }),
     requestLink,
     new HttpLink({
@@ -115,5 +121,5 @@ ReactDOM.render(
       <App />
     </ApolloProvider>
   </ThemeProvider>,
-  document.querySelector('#root')
+    $appRoot
 )

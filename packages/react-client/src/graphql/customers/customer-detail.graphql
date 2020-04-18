@@ -1,0 +1,15 @@
+query CustomerDetail($id: String!) {
+    customer(id: $id) {
+        id
+        name
+        emails
+        customerId
+        createdAt
+        payerId
+        verifiedAccount
+        user {
+            email
+            name
+        }
+    }
+}

@@ -18,7 +18,7 @@ export const Routes: React.FC = () => {
                 <Route exact path="/users" component={User} />
                 <Route exact path="/posts" component={Posts} />
                 <Route exact path="/user/profile" component={UserProfile} />
-                <Route exact path="/error/:networkError/:apiError" component={ErrorPage} />
+                <Route exact path="/error" component={ErrorPage} />
             </Switch>
         </>
     )

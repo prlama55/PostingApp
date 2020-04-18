@@ -87,7 +87,7 @@ const Register: React.FC<Props> = ({classes, history}) => {
         ...state,
       },
     })
-    history.push('/users')
+    history.push('/login?error=Please login to continue')
   }
   const setUserType=(event: React.ChangeEvent<HTMLInputElement>)=>{
     setState({
@@ -95,33 +95,15 @@ const Register: React.FC<Props> = ({classes, history}) => {
       userType: event.target.value
     })
   }
-  console.log("state=====",state)
   return (
       <div className={classes.app}>
         <Grid container spacing={8}>
           <Grid item xs>
             <Paper className={classes.padding}>
               <div className={classes.margin}>
-                <Grid
-                    container
-                    spacing={8}
-                    justify="center"
-                    alignItems="center"
-                    className={classes.headerTitle}
-                >
-                  <Grid
-                      item
-                      md={true}
-                      sm={true}
-                      xs={true}
-                      className={classes.title}
-                  >
-                    Register
-                  </Grid>
-                </Grid>
                 <Grid container spacing={8} alignItems="flex-end">
                   <Grid item md={true} sm={true} xs={true}>
-                    <FormLabel component="legend">Register as: </FormLabel>
+                    <FormLabel component='h4'>Register as: </FormLabel>
                     <RadioGroup row aria-label="position" name="position" defaultValue="top">
                       <FormControlLabel
                           className={classes.radioControl}

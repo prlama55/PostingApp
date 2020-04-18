@@ -6,5 +6,6 @@ mutation Login($email: String!, $password: String!) {
     accessToken
     name
     hasBusiness
+    businessUserId
   }
 }

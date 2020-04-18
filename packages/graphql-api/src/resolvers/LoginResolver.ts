@@ -9,6 +9,7 @@ import {
   sendRefreshToken,
 } from '../authorization/auth'
 import { PartnerModel} from "../models/Partner";
+import {CustomerModel} from "../models/Customer";
 @Resolver(_of => User)
 export class LoginResolver {
   @Mutation(() => LoginResponse, { nullable: true })
@@ -30,15 +31,26 @@ export class LoginResolver {
     const accessToken = await createAccessToken(user)
     sendRefreshToken(res, refreshToken)
     let hasBusiness: boolean= false
+    let businessUserId: string= ''
     if(user.userType==='BusinessUser'){
       const partner= await PartnerModel.findOne({userId:user.id})
-      if(partner) hasBusiness= true
+      if(partner) {
+        hasBusiness= true
+        businessUserId= partner.id
+      }
+    }else if(user.userType==='CustomerUser'){
+      const customer= await CustomerModel.findOne({userId:user.id})
+      if(customer) {
+        hasBusiness= false
+        businessUserId= customer.id
+      }
     }
     return {
       email: user.email,
       accessToken: accessToken,
       role: user.userType?user.userType:'AdminUser',
       hasBusiness: hasBusiness,
+      businessUserId: businessUserId,
       name: user.firstName,
       id: user.id,
     }

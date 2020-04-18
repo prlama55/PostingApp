@@ -6,10 +6,12 @@ import {
   WithStyles,
   Grid,
   TextField,
-  Button,
+  Button, FormLabel,
 } from '@material-ui/core'
 import { useLoginMutation } from '../../graphql'
 import { RouteComponentProps } from 'react-router-dom'
+import queryString from "query-string";
+import AppAlert from "../premitive/AppAlert";
 const styles = (theme: any) => ({
   app: {
     flexGrow: 1,
@@ -50,7 +52,9 @@ interface RegisterState {
   firstName: string
   lastName: string
 }
-const Login: React.FC<Props> = ({ classes, history }) => {
+const Login: React.FC<Props> = (props: Props) => {
+  const parsedData: any = queryString.parse(props.location.search);
+  const { classes, history }= props
   const [loginMutation] = useLoginMutation()
   const initialState: RegisterState = {
     email: '',
@@ -79,12 +83,10 @@ const Login: React.FC<Props> = ({ classes, history }) => {
         ...state,
       },
     })
-    console.log('response=====', response)
     if (response && response.data) {
       setAppCredential({
         ...response.data.login,
       } as AppCredential)
-      console.log("")
       localStorage.setItem('user', JSON.stringify(response.data.login))
     }
     history.push('/')
@@ -95,20 +97,10 @@ const Login: React.FC<Props> = ({ classes, history }) => {
         <Grid item xs>
           <Paper className={classes.padding}>
             <div className={classes.margin}>
-              <Grid
-                container
-                spacing={8}
-                justify="center"
-                className={classes.headerTitle}
-              >
-                <Grid
-                  item
-                  md={true}
-                  sm={true}
-                  xs={true}
-                  className={classes.title}
-                >
-                  Register
+              <FormLabel component='h4'>Login </FormLabel>
+              <Grid container spacing={8} alignItems="flex-end">
+                <Grid item md={true} sm={true} xs={true}>
+                  {parsedData.error && <AppAlert alertType='error' message={parsedData.error}/>}
                 </Grid>
               </Grid>
               <Grid container spacing={8} alignItems="flex-end">

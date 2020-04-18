@@ -18,5 +18,8 @@ export class LoginResponse {
     name: string
 
     @Field()
+    businessUserId: string
+
+    @Field()
     hasBusiness: boolean
 }

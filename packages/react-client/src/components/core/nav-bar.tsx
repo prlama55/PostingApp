@@ -26,6 +26,7 @@ const Logout: React.FC<RouteComponentProps> = (props) => {
           email: '',
           role: '',
           name: '',
+          businessUserId: '',
           hasBusiness: false,
         })
         localStorage.removeItem('user')
@@ -44,6 +45,7 @@ const styles = (theme: any) => ({
   },
   title: {
     flexGrow: 1,
+    height: 35
   },
   root: {
     flexGrow: 1,
@@ -73,7 +75,6 @@ class NavBar extends React.Component<Props, State> {
     super(props)
     const {location}= props
     const {pathname}= location
-    console.log("location====",location)
     this.state = {
       tab: pathname.replace('/',''),
       anchorEl: null,
@@ -128,8 +129,9 @@ class NavBar extends React.Component<Props, State> {
                 <HomeIcon />
               </Link>
             </IconButton>
+
             <Typography variant="h6" className={classes.title}>
-              {name && (
+              {userCredential.role==='AdminUser' && (
                 <>
                   <Tabs
                     value={tab}

@@ -36,6 +36,8 @@ export type LoginResponse = {
   role: Scalars['String'];
   accessToken: Scalars['String'];
   name: Scalars['String'];
+  businessUserId: Scalars['String'];
+  hasBusiness: Scalars['Boolean'];
 };
 
 export type Mutation = {
@@ -297,6 +299,23 @@ export type CreateCustomerMutation = (
   ) }
 );
 
+export type CustomerDetailQueryVariables = {
+  id: Scalars['String'];
+};
+
+
+export type CustomerDetailQuery = (
+  { __typename?: 'Query' }
+  & { customer: (
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id' | 'name' | 'emails' | 'customerId' | 'createdAt' | 'payerId' | 'verifiedAccount'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'email' | 'name'>
+    ) }
+  ) }
+);
+
 export type CustomersQueryVariables = {};
 
 
@@ -375,6 +394,23 @@ export type CreatePartnerMutationVariables = {
 export type CreatePartnerMutation = (
   { __typename?: 'Mutation' }
   & { createPartner: (
+    { __typename?: 'Partner' }
+    & Pick<Partner, 'id' | 'name' | 'emails' | 'partnerId' | 'createdAt' | 'payerId' | 'clientId' | 'verifiedAccount'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'email' | 'name'>
+    ) }
+  ) }
+);
+
+export type PartnerDetailQueryVariables = {
+  id: Scalars['String'];
+};
+
+
+export type PartnerDetailQuery = (
+  { __typename?: 'Query' }
+  & { partner: (
     { __typename?: 'Partner' }
     & Pick<Partner, 'id' | 'name' | 'emails' | 'partnerId' | 'createdAt' | 'payerId' | 'clientId' | 'verifiedAccount'>
     & { user: (
@@ -480,7 +516,7 @@ export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login?: Maybe<(
     { __typename?: 'LoginResponse' }
-    & Pick<LoginResponse, 'id' | 'email' | 'role' | 'accessToken' | 'name'>
+    & Pick<LoginResponse, 'id' | 'email' | 'role' | 'accessToken' | 'name' | 'hasBusiness' | 'businessUserId'>
   )> }
 );
 
@@ -566,6 +602,49 @@ export function useCreateCustomerMutation(baseOptions?: ApolloReactHooks.Mutatio
 export type CreateCustomerMutationHookResult = ReturnType<typeof useCreateCustomerMutation>;
 export type CreateCustomerMutationResult = ApolloReactCommon.MutationResult<CreateCustomerMutation>;
 export type CreateCustomerMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateCustomerMutation, CreateCustomerMutationVariables>;
+export const CustomerDetailDocument = gql`
+    query CustomerDetail($id: String!) {
+  customer(id: $id) {
+    id
+    name
+    emails
+    customerId
+    createdAt
+    payerId
+    verifiedAccount
+    user {
+      email
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useCustomerDetailQuery__
+ *
+ * To run a query within a React component, call `useCustomerDetailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCustomerDetailQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCustomerDetailQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCustomerDetailQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CustomerDetailQuery, CustomerDetailQueryVariables>) {
+        return ApolloReactHooks.useQuery<CustomerDetailQuery, CustomerDetailQueryVariables>(CustomerDetailDocument, baseOptions);
+      }
+export function useCustomerDetailLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CustomerDetailQuery, CustomerDetailQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CustomerDetailQuery, CustomerDetailQueryVariables>(CustomerDetailDocument, baseOptions);
+        }
+export type CustomerDetailQueryHookResult = ReturnType<typeof useCustomerDetailQuery>;
+export type CustomerDetailLazyQueryHookResult = ReturnType<typeof useCustomerDetailLazyQuery>;
+export type CustomerDetailQueryResult = ApolloReactCommon.QueryResult<CustomerDetailQuery, CustomerDetailQueryVariables>;
 export const CustomersDocument = gql`
     query Customers {
   customers {
@@ -760,6 +839,50 @@ export function useCreatePartnerMutation(baseOptions?: ApolloReactHooks.Mutation
 export type CreatePartnerMutationHookResult = ReturnType<typeof useCreatePartnerMutation>;
 export type CreatePartnerMutationResult = ApolloReactCommon.MutationResult<CreatePartnerMutation>;
 export type CreatePartnerMutationOptions = ApolloReactCommon.BaseMutationOptions<CreatePartnerMutation, CreatePartnerMutationVariables>;
+export const PartnerDetailDocument = gql`
+    query PartnerDetail($id: String!) {
+  partner(id: $id) {
+    id
+    name
+    emails
+    partnerId
+    createdAt
+    payerId
+    clientId
+    verifiedAccount
+    user {
+      email
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __usePartnerDetailQuery__
+ *
+ * To run a query within a React component, call `usePartnerDetailQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePartnerDetailQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePartnerDetailQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePartnerDetailQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PartnerDetailQuery, PartnerDetailQueryVariables>) {
+        return ApolloReactHooks.useQuery<PartnerDetailQuery, PartnerDetailQueryVariables>(PartnerDetailDocument, baseOptions);
+      }
+export function usePartnerDetailLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PartnerDetailQuery, PartnerDetailQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<PartnerDetailQuery, PartnerDetailQueryVariables>(PartnerDetailDocument, baseOptions);
+        }
+export type PartnerDetailQueryHookResult = ReturnType<typeof usePartnerDetailQuery>;
+export type PartnerDetailLazyQueryHookResult = ReturnType<typeof usePartnerDetailLazyQuery>;
+export type PartnerDetailQueryResult = ApolloReactCommon.QueryResult<PartnerDetailQuery, PartnerDetailQueryVariables>;
 export const PartnerDocument = gql`
     query Partner {
   partners {
@@ -982,6 +1105,8 @@ export const LoginDocument = gql`
     role
     accessToken
     name
+    hasBusiness
+    businessUserId
   }
 }
     `;

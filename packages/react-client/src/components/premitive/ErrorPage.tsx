@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import { Grid, withStyles, WithStyles } from '@material-ui/core'
-import { RouteComponentProps } from 'react-router-dom';
+import AppAlert from "./AppAlert";
 const styles = () => ({
     app: {
         flexGrow: 1,
@@ -14,7 +14,9 @@ const styles = () => ({
     }
 })
 
-export type Props= RouteComponentProps & WithStyles
+interface Props extends WithStyles{
+    error: string
+}
 // export interface Props extends RouteComponentProps, WithStyles{
 // // name: string
 // // }
@@ -24,13 +26,14 @@ class ErrorPage extends Component<Props>{
         console.log("==============", this.props)
     }
     render(){
-        const {classes, match}: any= this.props
-        const errorMessage= match.params.apiError!=='undefined'?match.params.apiError: match.params.networkError
+        const {classes, error}= this.props
+        // const parsedData: any = queryString.parse(location.search);
+        // const errorMessage= parsedData.errorMessage
         return (
             <div className={classes.app}>
                 <Grid container spacing={8} alignItems="center">
                     <Grid item xs>
-                        <p className={classes.error}>{errorMessage}</p>
+                        <AppAlert message={error} alertType='error'/>
                     </Grid>
                 </Grid>
             </div>

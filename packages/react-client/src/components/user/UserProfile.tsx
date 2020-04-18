@@ -4,15 +4,19 @@ import {
   withStyles,
   WithStyles,
   Grid,
-  TextField, Button,
+  TextField, Button, FormLabel,
 } from '@material-ui/core'
 import {RouteComponentProps} from 'react-router-dom'
 import queryString from 'query-string'
 import qs from 'qs'
 import axios, {AxiosRequestConfig} from 'axios'
 import {PAYPAL_USER_URL, PAYPAL_CREDENTIAL, PAYPAL_TOKEN_URL} from "../../config/config";
-import {AppCredential, getAppCredential} from "../../config/accessToken";
-import {useCreatePartnerMutation} from "../../graphql";
+import {AppCredential, getAppCredential, setAppCredential} from "../../config/accessToken";
+import {
+  useCreatePartnerMutation,
+  useCustomerDetailQuery,
+  usePartnerDetailQuery
+} from "../../graphql";
 import AppAlert, {AppAlertProps} from "../premitive/AppAlert";
 
 
@@ -59,8 +63,94 @@ interface RegisterState {
   clientId: string
   verifiedAccount: string
 }
+
+// @ts-ignore
+const getToken:AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
+
+export const UserInfo:React.FC=()=>{
+  return (
+      <>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Name: {getToken.name}
+          </Grid>
+        </Grid>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Email: {getToken.email}
+          </Grid>
+        </Grid>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            User Role: {getToken.role}
+          </Grid>
+        </Grid>
+      </>
+  )
+}
+export const CustomerProfile:React.FC=()=>{
+  const {data} = useCustomerDetailQuery({
+    variables: {
+      id: getToken.businessUserId
+    },
+    fetchPolicy: 'network-only',
+  })
+  let customer
+  if(data) customer= data.customer
+  return customer ? (
+      <>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Name: {customer.name}
+          </Grid>
+        </Grid>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Email: {customer.user.email}
+          </Grid>
+        </Grid>
+      </>
+  ):(<></>)
+}
+export const BusinessProfile:React.FC=()=>{
+  const {data} = usePartnerDetailQuery({
+    variables: {
+      id: getToken.businessUserId
+    },
+    fetchPolicy: 'network-only',
+  })
+  let partner
+  if(data) partner= data.partner
+  return partner ? (
+      <>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Business Name: {partner.name}
+          </Grid>
+        </Grid>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Personal Email: {partner.user.email}
+          </Grid>
+        </Grid>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            Business Emails: {partner.emails}
+          </Grid>
+        </Grid>
+        <Grid container spacing={8} alignItems="flex-end">
+          <Grid item md={true} sm={true} xs={true} component='h4'>
+            PayPal Verified: {partner.verifiedAccount==='true'?'Verified':'Not verified'}
+          </Grid>
+        </Grid>
+
+      </>
+  ):(<></>)
+}
+
 const UserProfile: React.FC<Props> = (props: Props) => {
-  const [createPartner] = useCreatePartnerMutation()
+  const [partnerMutation] = useCreatePartnerMutation()
+
   const initialState: RegisterState = {
     userId: '',
     name: '',
@@ -74,8 +164,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
     message:'',
     alertType:'success'
   }
-  // @ts-ignore
-  let userCredential: AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
+
   const [state, setState] = useState(initialState)
   const [alertMessage, setAlertMessage] = useState(initialAlert)
   const setValue = (
@@ -92,7 +181,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
   const parsedData: any = queryString.parse(props.location.search);
   const {code}= parsedData
   const reqData = {
-    "grant_type": 'client_credentials',
+    "grant_type": 'authorization_code',
     "code": code
   };
   const options:AxiosRequestConfig = {
@@ -103,7 +192,6 @@ const UserProfile: React.FC<Props> = (props: Props) => {
     data: qs.stringify(reqData),
     url: PAYPAL_TOKEN_URL,
   };
-  let userData: RegisterState
 
   const submit = async () => {
     if(!state.clientId){
@@ -112,59 +200,53 @@ const UserProfile: React.FC<Props> = (props: Props) => {
         message: 'Please enter PayPal clientID.',
       })
     }else{
-      axios(options).then(res=>{
-        const data= res.data
-        const userOptions:AxiosRequestConfig = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer  ${data.access_token}`
-          },
-          url:PAYPAL_USER_URL,
-        };
-        axios(userOptions).then(usrData=>{
-          console.log("userData=====",usrData)
-          const data: any= usrData.data
-          let email=''
-          const {user_id,name, payer_id, verified_account, emails}= data
-          // const {street_address, locality, region, postal_code, country}= address
-          emails.map((e: any)=>{
-            email= email.concat(','+e.value)
-          })
-          userData={
-            ...state,
-            userId:userCredential.id,
-            name:name,
-            emails: email,
-            partnerId: user_id,
-            payerId: payer_id,
-            verifiedAccount:verified_account,
-          } as RegisterState
-        }).catch(err=>{
-          console.log(err)
-          setAlertMessage({
-            alertType: 'error',
-            message: 'Could not verify PayPal. Please! try again',
-          })
-        })
-      }).catch(err=>{
-        console.log("err===", err)
-        setAlertMessage({
-          alertType: 'error',
-          message: 'Could not verify PayPal. Please! try again',
-        })
-      }).finally(async function () {
-        // always executed
-        await createPartner({
-          variables: {
-            ...userData,
-          },
-        })
-        setAlertMessage({
-          alertType: 'success',
-          message: 'Your business profile has been updated..',
-        })
-      });
+      const getAccessToken= await axios(options)
+      const userOptions:AxiosRequestConfig = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer  ${getAccessToken.data.access_token}`
+        },
+        url:PAYPAL_USER_URL,
+      };
+
+      const getUserData= await axios(userOptions)
+      const data: any= getUserData.data
+      let email=''
+      const {user_id,name, payer_id, verified_account, emails}= data
+      // const {street_address, locality, region, postal_code, country}= address
+      emails.map((e: any)=>{
+        email= email.concat(','+e.value)
+      })
+      const userData={
+        ...state,
+        userId:getToken.id,
+        name:name,
+        emails: email,
+        partnerId: user_id,
+        payerId: payer_id,
+        verifiedAccount:verified_account,
+      } as RegisterState
+
+      const response=await partnerMutation({
+        variables: {
+          ...userData,
+        },
+      })
+      const {createPartner}: any= response.data
+      const newCredential={
+        ...getToken,
+        hasBusiness: true,
+        businessUserId: createPartner.id
+      }
+      setAppCredential({
+        ...newCredential,
+      } as AppCredential)
+      localStorage.setItem('user', JSON.stringify(newCredential))
+      setAlertMessage({
+        alertType: 'success',
+        message: 'Your business profile has been updated..',
+      })
     }
 
 
@@ -175,51 +257,51 @@ const UserProfile: React.FC<Props> = (props: Props) => {
           <Grid item xs>
             <Paper className={classes.padding}>
               <div className={classes.margin}>
-                <Grid
-                    container
-                    spacing={8}
-                    justify="center"
-                    alignItems="center"
-                    className={classes.headerTitle}
-                >
-                  <Grid
-                      item
-                      md={true}
-                      sm={true}
-                      xs={true}
-                      className={classes.title}
-                  >
-                    Business User Detail
+                <FormLabel component='h4'>User Profile</FormLabel>
+                <Grid container spacing={8} alignItems="flex-end">
+                  <Grid item md={true} sm={true} xs={true}>
+                    {alertMessage.message && <AppAlert {...alertMessage}/>}
                   </Grid>
                 </Grid>
+                {getToken.businessUserId && getToken.role==='BusinessUser' &&
+                <BusinessProfile/>
+                }
+                {getToken.businessUserId && getToken.role==='CustomerUser' &&
+                <CustomerProfile/>
+                }
+                {getToken.role==='AdminUser' &&
+                <UserInfo/>
+                }
+                {getToken.role==='CustomerUser' && getToken.businessUserId==='' &&
+                <UserInfo/>
+                }
+                {getToken.businessUserId==='' && getToken.role==='BusinessUser' &&
+                <>
+                  <Grid container spacing={8} alignItems="flex-end">
+                    <Grid item md={true} sm={true} xs={true}>
+                      <TextField
+                          id="clientId"
+                          label="ClientID"
+                          type="text"
+                          fullWidth
+                          required
+                          onChange={setValue}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container justify="flex-end" style={{ marginTop: '10px' }}>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        style={{ textTransform: 'none' }}
+                        onClick={submit}
+                    >
+                      Save
+                    </Button>
+                  </Grid>
+                </>
+                }
 
-                <Grid container spacing={8} alignItems="flex-end">
-                  <Grid item md={true} sm={true} xs={true}>
-                    {alertMessage && <AppAlert {...alertMessage}/>}
-                  </Grid>
-                </Grid>
-                <Grid container spacing={8} alignItems="flex-end">
-                  <Grid item md={true} sm={true} xs={true}>
-                    <TextField
-                        id="clientId"
-                        label="ClientID"
-                        type="text"
-                        fullWidth
-                        required
-                        onChange={setValue}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container justify="flex-end" style={{ marginTop: '10px' }}>
-                  <Button
-                      variant="outlined"
-                      color="primary"
-                      style={{ textTransform: 'none' }}
-                      onClick={submit}
-                  >
-                    Save
-                  </Button>
-                </Grid>
               </div>
             </Paper>
           </Grid>

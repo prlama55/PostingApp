@@ -10,23 +10,22 @@ import {
 } from '../config/config'
 import { User, UserModel } from '../models/User'
 import {PartnerModel} from "../models/Partner";
+import {CustomerModel} from "../models/Customer";
 
-// @ts-ignore
 export const isAuth: MiddlewareFn<AppContext> = ({ context }, next) => {
-  // const authorization = context.req.headers['authorization']
+  const authorization = context.req.headers['authorization']
 
-  // if (!authorization) {
-  //   throw new Error('Not authorized!')
-  // }
-  //
-  // try {
-  //   const token = authorization.split(' ')[1]
-  //   const payload = verify(token, ACCESS_TOKEN_SECRET!)
-  //   context.payload = payload as any
-  // } catch (err) {
-  //   console.log(err)
-  //   throw new Error('Not authorized!')
-  // }
+  if (!authorization) {
+    throw new Error('Not authorized!')
+  }
+
+  try {
+    const token = authorization.split(' ')[1]
+    const payload = verify(token, ACCESS_TOKEN_SECRET!)
+    context.payload = payload as any
+  } catch (err) {
+    throw new Error('Not authorized!')
+  }
 
   return next()
 }
@@ -63,6 +62,7 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       accessToken: '',
       role: '',
       name: '',
+      businessUserId: '',
       id: '',
     })
   }
@@ -76,6 +76,7 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       accessToken: '',
       role: '',
       name: '',
+      businessUserId: '',
       id: '',
     })
   }
@@ -87,6 +88,7 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       accessToken: '',
       role: '',
       name: '',
+      businessUserId: '',
       id: '',
     })
   }
@@ -97,19 +99,27 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       accessToken: '',
       role: '',
       name: '',
+      businessUserId: '',
       id: '',
     })
   }else{
     const accessToken = await createAccessToken(user)
     const refreshToken = await createRefreshToken(user)
-    sendRefreshToken(res, refreshToken)
+    let businessUserId: string= ''
     let hasBusiness: boolean= false
+    sendRefreshToken(res, refreshToken)
     if(user.userType==='BusinessUser'){
-      PartnerModel.findOne({userId:user.id}).then(partner=>{
-        if(partner)hasBusiness= true
-      }).catch(_err=>{
-        console.error(_err)
-      })
+      const partner= await PartnerModel.findOne({userId:user.id})
+      if(partner) {
+        hasBusiness= true
+        businessUserId= partner.id
+      }
+    }else if(user.userType==='CustomerUser'){
+      const customer= await CustomerModel.findOne({userId:user.id})
+      if(customer) {
+        hasBusiness= false
+        businessUserId= customer.id
+      }
     }
 
     res.send({
@@ -119,6 +129,7 @@ export const getRefreshToken = async (req: Request | any, res: Response) => {
       role: user.userType?user.userType:'AdminUser',
       hasBusiness: hasBusiness,
       name: user.firstName,
+      businessUserId: businessUserId,
       id: user.id,
     })
   }

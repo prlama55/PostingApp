@@ -4,6 +4,7 @@ export interface AppCredential {
   role: string
   name: string
   id: string
+  businessUserId: string // app partner id
   hasBusiness: boolean
 }
 let appCredential: AppCredential = {
@@ -12,7 +13,8 @@ let appCredential: AppCredential = {
   role: '',
   name: '',
   id: '',
-  hasBusiness: false
+  hasBusiness: false,
+  businessUserId:''
 }
 
 export const setAppCredential = (credential: AppCredential) => {
