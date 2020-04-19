@@ -14,6 +14,8 @@ import {PartnerResolver} from "./resolvers/PartnerResolver";
 import {CustomerResolver} from "./resolvers/CustomerResolver";
 import {ProductResolver} from "./resolvers/ProductResolver";
 import {OrderResolver} from "./resolvers/OrderResolver";
+import {UserModel} from "./models/User";
+import { hash } from 'bcryptjs'
 class App {
   public app: Application
 
@@ -22,6 +24,11 @@ class App {
     this.setConfig()
     this.setMongoConfig()
     this.routes()
+    this.defaultUser().then(user=>{
+      console.log('User===',user)
+    }).catch(err=>{
+      console.log('======',err)
+    })
   }
   private setMongoConfig() {
     mongoose.Promise = global.Promise
@@ -72,6 +79,21 @@ class App {
     })
 
     this.app.post('/refresh_token',getRefreshToken)
+  }
+
+  private async defaultUser(){
+    let user= await UserModel.findOne({email:'super@gmail.com'})
+    if(!user){
+      return (await UserModel.create({
+        email:'super@gmail.com',
+        firstName:"Super",
+        lastName:'User',
+        userType:'AdminUser',
+        password: await hash('Admin@123',12)
+      })).save();
+    }else{
+      return user
+    }
   }
 }
 

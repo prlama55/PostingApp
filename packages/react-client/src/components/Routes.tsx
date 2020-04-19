@@ -7,6 +7,7 @@ import Login from './user/Login'
 import Posts from "./post/Posts";
 import UserProfile from "./user/UserProfile";
 import ErrorPage from "./premitive/ErrorPage";
+import Products from "./products/Products";
 
 export const Routes: React.FC = () => {
     return (
@@ -17,6 +18,7 @@ export const Routes: React.FC = () => {
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/users" component={User} />
                 <Route exact path="/posts" component={Posts} />
+                <Route exact path="/products" component={Products} />
                 <Route exact path="/user/profile" component={UserProfile} />
                 <Route exact path="/error" component={ErrorPage} />
             </Switch>

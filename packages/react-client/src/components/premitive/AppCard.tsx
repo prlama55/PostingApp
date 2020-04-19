@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import {CardActionArea, FormLabel, CardActions, CardContent, CardMedia, Typography } from '@material-ui/core';
+import {CardActionArea, FormLabel, CardActions, CardContent, CardMedia, Typography, Button } from '@material-ui/core';
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import {PaypalOptions} from "react-paypal-button";
 import {PAYPAL_CLIENT_ID} from "../../config/config";
@@ -62,23 +62,26 @@ const AppCard:React.FC<Props>=(props: Props)=> {
         intent: 'capture'
     }
 
-
     return (
         <Card className={classes.root}>
             <CardActionArea>
                 <RenderMedia url={imageUrl} title={title} isVideo={isVideo}/>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
-                        <FormLabel component="legend"><span className={classes.title}>{title} </span><strong>{price?' $'+price.toString():''}</strong></FormLabel>
+                        <FormLabel component="legend"><span className={classes.title}>{title} </span></FormLabel>
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
                         {description}
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            <CardActions className={classes.button}>
+            <CardActions>
+                {price &&
+                <Button size="small" color="primary">
+                    <strong>{'$'+price.toString()}</strong>
+                </Button>}
                 {checkout &&
-                <PayPalCheckoutButton paypalOptions={paypalOptions} amount={amount}/>
+                <PayPalCheckoutButton key={title.replace(' ','_')} paypalOptions={paypalOptions} amount={amount}/>
                 }
             </CardActions>
         </Card>

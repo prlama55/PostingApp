@@ -17,25 +17,25 @@ import { useLogoutMutation } from '../../graphql'
 const Logout: React.FC<RouteComponentProps> = (props) => {
   const [logout, {client}] = useLogoutMutation()
   return (
-    <MenuItem
-      onClick={async () => {
-        await logout()
-        setAppCredential({
-          id: '',
-          accessToken: '',
-          email: '',
-          role: '',
-          name: '',
-          businessUserId: '',
-          hasBusiness: false,
-        })
-        localStorage.removeItem('user')
-        client?.resetStore()
-        props.history.push('/login')
-      }}
-    >
-      Logout
-    </MenuItem>
+      <MenuItem
+          onClick={async () => {
+            await logout()
+            setAppCredential({
+              id: '',
+              accessToken: '',
+              email: '',
+              role: '',
+              name: '',
+              businessUserId: '',
+              hasBusiness: false,
+            })
+            localStorage.removeItem('user')
+            client?.resetStore()
+            props.history.push('/login')
+          }}
+      >
+        Logout
+      </MenuItem>
   )
 }
 
@@ -76,7 +76,7 @@ class NavBar extends React.Component<Props, State> {
     const {location}= props
     const {pathname}= location
     this.state = {
-      tab: pathname.replace('/',''),
+      tab: (pathname==='/')?'':pathname.replace('/',''),
       anchorEl: null,
     }
   }
@@ -89,6 +89,9 @@ class NavBar extends React.Component<Props, State> {
         break
       case 'posts':
         this.props.history.push('/posts')
+        break
+      case 'products':
+        this.props.history.push('/products')
         break
       default:
         this.props.history.push('/')
@@ -116,95 +119,98 @@ class NavBar extends React.Component<Props, State> {
     let userCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
     const { email, name } = userCredential
     return (
-      <div className={classes.root}>
-        <AppBar position="fixed">
-          <Toolbar>
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
-            >
-              <Link to="/">
-                <HomeIcon />
-              </Link>
-            </IconButton>
-
-            <Typography variant="h6" className={classes.title}>
-              {userCredential.role==='AdminUser' && (
-                <>
-                  <Tabs
-                    value={tab}
-                    onChange={this.handleChange}
-                    indicatorColor="secondary"
-                    variant="scrollable"
-                    scrollButtons="auto"
-                  >
-                    <Tab
-                      label="Users"
-                      value="users"
-                      className={classes.tabItem}
-                    />
-
-                    <Tab
-                      label="Posts"
-                      value="posts"
-                      className={classes.tabItem}
-                    />
-                  </Tabs>
-                </>
-              )}
-            </Typography>
-            {!name && (
-              <>
-                <Link to="/login">
-                  <Button style={{ textTransform: 'none' }}>Login</Button>
-                </Link>
-                <Link to="/register">
-                  <Button style={{ textTransform: 'none' }}>Register</Button>
-                </Link>
-              </>
-            )}
-            {name && (
-              <>
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={this.handleMenu}
+        <div className={classes.root}>
+          <AppBar position="fixed">
+            <Toolbar>
+              <IconButton
+                  edge="start"
+                  className={classes.menuButton}
                   color="inherit"
-                >
-                  <AccountCircle />
-                  {name}
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={open}
-                  onClose={this.handleClose}
-                >
-                  <MenuItem>
-                    <Link to="/user/profile" style={{ textTransform: 'none' }}>
-                      Profile
+                  aria-label="menu"
+              >
+                {name && <HomeIcon onClick={()=>this.setState({tab:''},()=>this.props.history.push('/'))}/>}
+              </IconButton>
+
+              <Typography variant="h6" className={classes.title}>
+                {(userCredential.role==='AdminUser' || userCredential.role==='BusinessUser') && (
+                    <>
+                      <Tabs
+                          value={tab}
+                          onChange={this.handleChange}
+                          indicatorColor="secondary"
+                          variant="scrollable"
+                          scrollButtons="auto"
+                      >
+                        {userCredential.role==='AdminUser' && <Tab
+                            label="Users"
+                            value="users"
+                            className={classes.tabItem}
+                        />}
+
+                        <Tab
+                            label="Posts"
+                            value="posts"
+                            className={classes.tabItem}
+                        />
+                        {userCredential.role==='BusinessUser' && <Tab
+                            label="Products"
+                            value="products"
+                            className={classes.tabItem}
+                        />}
+                      </Tabs>
+                    </>
+                )}
+              </Typography>
+              {!name && (
+                  <>
+                    <Link to="/login">
+                      <Button style={{ textTransform: 'none' }}>Login</Button>
                     </Link>
-                  </MenuItem>
-                  <MenuItem onClick={this.handleClose}>{email}</MenuItem>
-                  <Logout {...this.props}/>
-                </Menu>
-              </>
-            )}
-          </Toolbar>
-        </AppBar>
-      </div>
+                    <Link to="/register">
+                      <Button style={{ textTransform: 'none' }}>Register</Button>
+                    </Link>
+                  </>
+              )}
+              {name && (
+                  <>
+                    <IconButton
+                        aria-label="account of current user"
+                        aria-controls="menu-appbar"
+                        aria-haspopup="true"
+                        onClick={this.handleMenu}
+                        color="inherit"
+                    >
+                      <AccountCircle />
+                      {name}
+                    </IconButton>
+                    <Menu
+                        id="menu-appbar"
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        open={open}
+                        onClose={this.handleClose}
+                    >
+                      <MenuItem>
+                        <Link to="/user/profile" style={{ textTransform: 'none' }}>
+                          Profile
+                        </Link>
+                      </MenuItem>
+                      <MenuItem onClick={this.handleClose}>{email}</MenuItem>
+                      <Logout {...this.props}/>
+                    </Menu>
+                  </>
+              )}
+            </Toolbar>
+          </AppBar>
+        </div>
     )
   }
 }

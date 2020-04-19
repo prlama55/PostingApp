@@ -5,6 +5,8 @@ import {AppCredential, getAppCredential} from "../config/accessToken";
 import {paypalConfigOption} from "../config/config";
 import PayPalAuthButton from "./premitive/PayPalAuthButton";
 import AppCard from "./premitive/AppCard";
+import {usePostsQuery, useProductsQuery} from "../graphql";
+import Loading from "./core/Loading";
 const styles = () => ({
     app: {
         flexGrow: 1,
@@ -19,17 +21,34 @@ const styles = () => ({
         fontWeight: 'bold'
     }
 })
-// type Props= PayPalButtonProps & WithStyles & RouteComponentProps
 type Props= WithStyles & RouteComponentProps
 const Home: React.FC<Props> = (props: any) => {
-
     const { classes } = props
+    const postQuery: any = usePostsQuery({
+        fetchPolicy: 'network-only',
+    })
+    const productQuery: any = useProductsQuery({
+        fetchPolicy: 'network-only',
+    })
+
+    let products:any=[]
+    let posts:any=[]
+    let loading=false
+    if(postQuery.data) {
+        posts= postQuery.data.posts
+        loading= postQuery.loading
+    }
+    if(productQuery.data) {
+        products= productQuery.data.products
+        loading= productQuery.loading
+    }
+
     // @ts-ignore
     let userCredential: AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
     const hasBusiness=(userCredential.role==='BusinessUser' && !userCredential.hasBusiness)
     return (
         <div className={classes.app}>
-
+            {loading && <Loading/>}
             <Grid container spacing={8} alignItems="center">
                 <Grid item xs>
                     {hasBusiness &&
@@ -37,14 +56,40 @@ const Home: React.FC<Props> = (props: any) => {
                     }
                 </Grid>
             </Grid>
-            <Grid container spacing={8} alignItems="center" className={classes.postTitle}>
-                <FormLabel component='h4'> Text & Videos Post </FormLabel>
-            </Grid>
-            <Grid container spacing={8} alignItems="center">
-                <Grid item xs>
-                    <AppCard title={'Name'} description={'hello sarkar'} price={100} checkout/>
+            {(!loading && products.length>0) &&
+            <>
+                <Grid container spacing={8} alignItems="center" className={classes.postTitle}>
+                    <FormLabel component='h4'> Products </FormLabel>
                 </Grid>
-            </Grid>
+                <Grid container spacing={8} alignItems="center">
+                    {!loading && products.map((product: any) => {
+                        return (
+                            < Grid item xs={3} key={product.id}>
+                                <AppCard key={product.id} title={product.name} price={product.price} description={product.description} checkout/>
+                            </Grid>
+                        )
+                    })
+                    }
+                </Grid>
+            </>
+            }
+            {(!loading && posts.length>0) &&
+            <>
+                <Grid container spacing={8} alignItems="center" className={classes.postTitle}>
+                    <FormLabel component='h4'> Text & Videos Post </FormLabel>
+                </Grid>
+                <Grid container spacing={8} alignItems="center">
+                    {posts.map((post: any) => {
+                        return (
+                            < Grid item xs={3} key={post.id}>
+                                <AppCard key={post.id} imageUrl={post.post} title={post.title} isVideo={post.postType==='video'} description={post.description}/>
+                            </Grid>
+                        )
+                    })
+                    }
+                </Grid>
+            </>
+            }
         </div>
     )
 }

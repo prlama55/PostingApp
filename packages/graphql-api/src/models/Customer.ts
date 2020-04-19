@@ -18,7 +18,7 @@ export class Customer {
     emails: string;
 
     @Field()
-    @Property({ required: true })
+    @Property({ required: false })
     customerId: string;  // paypal user_id
 
     @Field()

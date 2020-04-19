@@ -57,7 +57,10 @@ const client = new ApolloClient({
       isTokenValidOrUndefined: () => {
         // @ts-ignore
         let token= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
-        if (!token.accessToken) return true
+        if (!token.accessToken) {
+          localStorage.removeItem('user')
+          return true
+        }
         try {
           const { exp } = jwtDecode(token.accessToken)
           if (Date.now() >= exp * 1000) {
@@ -98,13 +101,31 @@ const client = new ApolloClient({
         localStorage.removeItem('user')
       },
     }),
-    onError(({ graphQLErrors, networkError }) => {
+    onError((errors) => {
+      const {graphQLErrors, networkError}= errors
       console.log(graphQLErrors)
       console.log(networkError)
       let message=''
-      if(graphQLErrors!==undefined) message= graphQLErrors[0].message
-      if(networkError!==undefined) message= "Network Error"
-      window.location.href=`${window.location.href.split('?error')[0]}?error=${message}`
+      let path
+      if(graphQLErrors!==undefined) {
+        message= graphQLErrors[0].message
+        // @ts-ignore
+        if(graphQLErrors[0].path.length>0)path=graphQLErrors[0].path[0]
+      }
+      if(networkError!==undefined) message= "Network Error! Please try again"
+      console.log(message)
+      console.log(path)
+      let redirectUrl='/'
+      if (path==='login') {
+        localStorage.removeItem('user')
+          redirectUrl=`/login/?error=${message}`
+      }else if(message==='Not authorized!'){
+        localStorage.removeItem('user')
+        redirectUrl=`/login/?error=${message} Please login to continue`
+      }else{
+        redirectUrl=`/error/?errorMessage=${message}`
+      }
+      window.location.href=redirectUrl
     }),
     requestLink,
     new HttpLink({

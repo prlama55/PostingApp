@@ -2,6 +2,7 @@ import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware } fro
 import { User, UserModel } from "../models/User";
 import { hash } from 'bcryptjs'
 import {isAuth} from "../authorization/auth";
+import {CustomerModel} from "../models/Customer";
 @Resolver(_of => User)
 export class UserResolver {
 
@@ -37,13 +38,19 @@ export class UserResolver {
         @Arg("userType") userType: string
     ) {
         const hashPass= await hash(password,12)
-        const user = (await UserModel.create({
+        const user:any = (await UserModel.create({
             email,
             firstName,
             lastName,
             userType,
             password: hashPass
         })).save();
+        if(user.userType==='CustomerUser'){
+            (await CustomerModel.create({
+                name: `${user.firstName} ${user.lastName}`,
+                emails: `${user.email}`
+            })).save();
+        }
         return user? true: false;
     };
 

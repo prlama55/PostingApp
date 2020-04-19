@@ -64,7 +64,7 @@ const Register: React.FC<Props> = ({classes, history}) => {
     password: '',
     firstName: '',
     lastName: '',
-    userType: '',
+    userType: 'CustomerUser',
   }
   const [state, setState] = useState(initialState)
   const setValue = (
@@ -107,20 +107,21 @@ const Register: React.FC<Props> = ({classes, history}) => {
                     <RadioGroup row aria-label="position" name="position" defaultValue="top">
                       <FormControlLabel
                           className={classes.radioControl}
-                          value="BusinessUser"
-                          control={<Radio color="primary" checked={state.userType === 'BusinessUser'} onChange={setUserType}/>}
-                          label="Business User"
-                          labelPlacement="start"
-                      />
-                      <FormControlLabel
-                          className={classes.radioControl}
                           value="CustomerUser"
                           control={
                             <Radio color="primary" checked={state.userType === 'CustomerUser'} onChange={setUserType}/>
                           }
                           label="Customer User"
+                          labelPlacement="start"
+                      />
+                      <FormControlLabel
+                          className={classes.radioControl}
+                          value="BusinessUser"
+                          control={<Radio color="primary" checked={state.userType === 'BusinessUser'} onChange={setUserType}/>}
+                          label="Business User"
                           labelPlacement="end"
                       />
+
                     </RadioGroup>
                   </Grid>
                 </Grid>
