@@ -112,6 +112,7 @@ const Login: React.FC<Props> = (props: Props) => {
                     fullWidth
                     autoFocus
                     required
+                    variant="outlined"
                     onChange={setValue}
                   />
                 </Grid>
@@ -124,6 +125,7 @@ const Login: React.FC<Props> = (props: Props) => {
                     type="password"
                     fullWidth
                     required
+                    variant="outlined"
                     onChange={setValue}
                   />
                 </Grid>

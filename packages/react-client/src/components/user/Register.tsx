@@ -133,6 +133,7 @@ const Register: React.FC<Props> = ({classes, history}) => {
                         fullWidth
                         autoFocus
                         required
+                        variant="outlined"
                         onChange={setValue}
                     />
                   </Grid>
@@ -145,6 +146,7 @@ const Register: React.FC<Props> = ({classes, history}) => {
                         type="password"
                         fullWidth
                         required
+                        variant="outlined"
                         onChange={setValue}
                     />
                   </Grid>
@@ -157,6 +159,7 @@ const Register: React.FC<Props> = ({classes, history}) => {
                         type="text"
                         fullWidth
                         required
+                        variant="outlined"
                         onChange={setValue}
                     />
                   </Grid>
@@ -169,6 +172,7 @@ const Register: React.FC<Props> = ({classes, history}) => {
                         type="text"
                         fullWidth
                         required
+                        variant="outlined"
                         onChange={setValue}
                     />
                   </Grid>

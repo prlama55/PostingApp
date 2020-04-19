@@ -28,6 +28,7 @@ type LoginResponse {
   role: String!
   accessToken: String!
   name: String!
+  businessUserId: String!
   hasBusiness: Boolean!
 }
 

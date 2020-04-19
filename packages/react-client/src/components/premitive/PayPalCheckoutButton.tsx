@@ -16,8 +16,9 @@ const PayPalCheckoutButton:React.FC<Props>=(props: Props)=>{
     const { amount, paypalOptions}= props
 
     const buttonStyles: ButtonStylingOptions = {
-        layout: 'vertical',
+        layout: 'horizontal',
         shape: 'rect',
+        label: 'pay'
     }
     const onApprove=(data: OnApproveData, authId: string)=>{
         console.log(`${authId}=====`, data)

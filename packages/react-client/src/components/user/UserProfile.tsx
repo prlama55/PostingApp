@@ -285,6 +285,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
                           type="text"
                           fullWidth
                           required
+                          variant="outlined"
                           onChange={setValue}
                       />
                     </Grid>
