@@ -64,11 +64,13 @@ const client = new ApolloClient({
         try {
           const { exp } = jwtDecode(token.accessToken)
           if (Date.now() >= exp * 1000) {
+            localStorage.removeItem('user')
             return false
           } else {
             return true
           }
         } catch {
+          localStorage.removeItem('user')
           return false
         }
       },

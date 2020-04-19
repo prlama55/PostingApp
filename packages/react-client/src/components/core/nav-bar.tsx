@@ -94,7 +94,6 @@ class NavBar extends React.Component<Props, State> {
         this.props.history.push('/products')
         break
       default:
-        this.props.history.push('/')
         break
     }
   }
@@ -122,14 +121,15 @@ class NavBar extends React.Component<Props, State> {
         <div className={classes.root}>
           <AppBar position="fixed">
             <Toolbar>
-              <IconButton
-                  edge="start"
-                  className={classes.menuButton}
-                  color="inherit"
-                  aria-label="menu"
-              >
-                {name && <HomeIcon onClick={()=>this.setState({tab:''},()=>this.props.history.push('/'))}/>}
-              </IconButton>
+              {/*<IconButton*/}
+              {/*    edge="start"*/}
+              {/*    className={classes.menuButton}*/}
+              {/*    color="inherit"*/}
+              {/*    aria-label="menu"*/}
+              {/*    onClick={()=>this.setState({tab:''},()=>this.props.history.push('/'))}*/}
+              {/*>*/}
+              {/*  {name && <HomeIcon/>}*/}
+              {/*</IconButton>*/}
 
               <Typography variant="h6" className={classes.title}>
                 {(userCredential.role==='AdminUser' || userCredential.role==='BusinessUser') && (
@@ -141,6 +141,12 @@ class NavBar extends React.Component<Props, State> {
                           variant="scrollable"
                           scrollButtons="auto"
                       >
+                        <Tab
+                            icon={<HomeIcon/>}
+                            label=""
+                            value=""
+                            className={classes.tabItem}
+                        />
                         {userCredential.role==='AdminUser' && <Tab
                             label="Users"
                             value="users"
