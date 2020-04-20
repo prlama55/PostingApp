@@ -5,7 +5,7 @@
   "scripts": {
     "client": "cd packages/react-client && yarn start",
     "server": "cd packages/graphql-api && yarn start",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "dev": "concurrently --mutex file --kill-others-on-fail \"yarn server\" \"yarn client\""
   },
   "workspaces": [
     "packages/*"
