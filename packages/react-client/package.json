@@ -17,7 +17,9 @@
     "apollo-boost": "^0.4.7",
     "apollo-link-token-refresh": "^0.2.7",
     "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
     "entropy-string": "^4.2.0",
+    "env-cmd": "^10.1.0",
     "graphql": "^14.6.0",
     "html-webpack-plugin": "latest",
     "jwt-decode": "^2.2.0",
@@ -36,7 +38,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "gen": "graphql-codegen --config codegen.yml"
@@ -71,6 +73,7 @@
     "awesome-typescript-loader": "^5.2.1",
     "clean-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^4.0.4",
+    "react-app-env": "^1.2.3",
     "react-hot-loader": "^4.12.20",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.2",

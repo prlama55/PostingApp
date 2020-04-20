@@ -1,4 +1,4 @@
-import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware, Authorized} from "type-graphql";
 import {Product, ProductModel} from "../models/Product";
 import {Partner, PartnerModel} from "../models/Partner";
 import {isAuth} from "../authorization/auth";
@@ -20,6 +20,7 @@ export class ProductResolver {
 
     @Mutation(() => Product)
     @UseMiddleware(isAuth)
+    @Authorized("BusinessUser")
     async createProduct(
         @Arg('partnerId') partnerId: string,
         @Arg('name') name: string,
@@ -37,6 +38,7 @@ export class ProductResolver {
 
     @Mutation(() => Boolean)
     @UseMiddleware(isAuth)
+    @Authorized("BusinessUser")
     async deleteProduct(@Arg("id") id: string) {
         await ProductModel.deleteOne({id});
         return true;

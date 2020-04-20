@@ -16,6 +16,8 @@ import {ProductResolver} from "./resolvers/ProductResolver";
 import {OrderResolver} from "./resolvers/OrderResolver";
 import {UserModel} from "./models/User";
 import { hash } from 'bcryptjs'
+import {permissionChecker} from "./Decorators/permission";
+import {CartResolver} from "./resolvers/CartResolver";
 class App {
   public app: Application
 
@@ -24,8 +26,8 @@ class App {
     this.setConfig()
     this.setMongoConfig()
     this.routes()
-    this.defaultUser().then(user=>{
-      console.log('User===',user)
+    this.defaultUser().then(_user=>{
+
     }).catch(err=>{
       console.log('======',err)
     })
@@ -45,7 +47,7 @@ class App {
     // @ts-ignore
     this.app.use(cors({
       credentials: true,
-      origin: ["http://localhost:3000", "http://127.0.0.1:3000"]
+      origin: ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:3000",  "http://50.17.184.113:5000"]
     }))
     this.app.use(bodyParser.json({ limit: '50mb' }))
     this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
@@ -60,10 +62,12 @@ class App {
         PartnerResolver,
         CustomerResolver,
         ProductResolver,
-        OrderResolver
+        OrderResolver,
+        CartResolver
       ],
       emitSchemaFile: true,
-      validate: false
+      validate: false,
+      authChecker: permissionChecker
     });
     const apolloServer = new ApolloServer({
       schema,

@@ -13,6 +13,23 @@ export type Scalars = {
   DateTime: any;
 };
 
+/** The Cart model */
+export type Cart = {
+   __typename?: 'Cart';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  price: Scalars['Float'];
+  description: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  partnerId: Scalars['String'];
+  partner: Partner;
+  customerId: Scalars['String'];
+  customer: Customer;
+  productId: Scalars['String'];
+  product: Product;
+};
+
 /** The Partner model */
 export type Customer = {
    __typename?: 'Customer';
@@ -57,6 +74,8 @@ export type Mutation = {
   deleteProduct: Scalars['Boolean'];
   createOrder: Order;
   deleteOrder: Scalars['Boolean'];
+  createCart: Cart;
+  deleteCart: Scalars['Boolean'];
 };
 
 
@@ -157,6 +176,21 @@ export type MutationDeleteOrderArgs = {
   id: Scalars['String'];
 };
 
+
+export type MutationCreateCartArgs = {
+  description: Scalars['String'];
+  price: Scalars['Float'];
+  name: Scalars['String'];
+  productId: Scalars['String'];
+  customerId: Scalars['String'];
+  partnerId: Scalars['String'];
+};
+
+
+export type MutationDeleteCartArgs = {
+  id: Scalars['String'];
+};
+
 /** The Partner model */
 export type Order = {
    __typename?: 'Order';
@@ -232,6 +266,8 @@ export type Query = {
   products: Array<Product>;
   order: Order;
   orders: Array<Order>;
+  cart: Cart;
+  carts: Array<Cart>;
 };
 
 
@@ -264,6 +300,16 @@ export type QueryOrderArgs = {
   id: Scalars['String'];
 };
 
+
+export type QueryCartArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryCartsArgs = {
+  customerId: Scalars['String'];
+};
+
 /** The Users model */
 export type User = {
    __typename?: 'User';
@@ -275,6 +321,57 @@ export type User = {
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
 };
+
+export type CartsQueryVariables = {
+  customerId: Scalars['String'];
+};
+
+
+export type CartsQuery = (
+  { __typename?: 'Query' }
+  & { carts: Array<(
+    { __typename?: 'Cart' }
+    & Pick<Cart, 'id' | 'name' | 'price' | 'description' | 'createdAt'>
+    & { partner: (
+      { __typename?: 'Partner' }
+      & Pick<Partner, 'id' | 'clientId' | 'name'>
+    ), customer: (
+      { __typename?: 'Customer' }
+      & Pick<Customer, 'id' | 'name'>
+    ), product: (
+      { __typename?: 'Product' }
+      & Pick<Product, 'id' | 'name'>
+    ) }
+  )> }
+);
+
+export type CreateCartMutationVariables = {
+  partnerId: Scalars['String'];
+  customerId: Scalars['String'];
+  productId: Scalars['String'];
+  name: Scalars['String'];
+  price: Scalars['Float'];
+  description: Scalars['String'];
+};
+
+
+export type CreateCartMutation = (
+  { __typename?: 'Mutation' }
+  & { createCart: (
+    { __typename?: 'Cart' }
+    & Pick<Cart, 'id' | 'name' | 'price' | 'description' | 'createdAt'>
+    & { partner: (
+      { __typename?: 'Partner' }
+      & Pick<Partner, 'id' | 'clientId' | 'name'>
+    ), customer: (
+      { __typename?: 'Customer' }
+      & Pick<Customer, 'id' | 'name'>
+    ), product: (
+      { __typename?: 'Product' }
+      & Pick<Product, 'id' | 'name'>
+    ) }
+  ) }
+);
 
 export type CreateCustomerMutationVariables = {
   userId: Scalars['String'];
@@ -554,6 +651,110 @@ export type UsersQuery = (
 );
 
 
+export const CartsDocument = gql`
+    query Carts($customerId: String!) {
+  carts(customerId: $customerId) {
+    id
+    name
+    price
+    description
+    createdAt
+    partner {
+      id
+      clientId
+      name
+    }
+    customer {
+      id
+      name
+    }
+    product {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useCartsQuery__
+ *
+ * To run a query within a React component, call `useCartsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCartsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCartsQuery({
+ *   variables: {
+ *      customerId: // value for 'customerId'
+ *   },
+ * });
+ */
+export function useCartsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CartsQuery, CartsQueryVariables>) {
+        return ApolloReactHooks.useQuery<CartsQuery, CartsQueryVariables>(CartsDocument, baseOptions);
+      }
+export function useCartsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CartsQuery, CartsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CartsQuery, CartsQueryVariables>(CartsDocument, baseOptions);
+        }
+export type CartsQueryHookResult = ReturnType<typeof useCartsQuery>;
+export type CartsLazyQueryHookResult = ReturnType<typeof useCartsLazyQuery>;
+export type CartsQueryResult = ApolloReactCommon.QueryResult<CartsQuery, CartsQueryVariables>;
+export const CreateCartDocument = gql`
+    mutation CreateCart($partnerId: String!, $customerId: String!, $productId: String!, $name: String!, $price: Float!, $description: String!) {
+  createCart(partnerId: $partnerId, customerId: $customerId, productId: $productId, name: $name, price: $price, description: $description) {
+    id
+    name
+    price
+    description
+    createdAt
+    partner {
+      id
+      clientId
+      name
+    }
+    customer {
+      id
+      name
+    }
+    product {
+      id
+      name
+    }
+  }
+}
+    `;
+export type CreateCartMutationFn = ApolloReactCommon.MutationFunction<CreateCartMutation, CreateCartMutationVariables>;
+
+/**
+ * __useCreateCartMutation__
+ *
+ * To run a mutation, you first call `useCreateCartMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCartMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCartMutation, { data, loading, error }] = useCreateCartMutation({
+ *   variables: {
+ *      partnerId: // value for 'partnerId'
+ *      customerId: // value for 'customerId'
+ *      productId: // value for 'productId'
+ *      name: // value for 'name'
+ *      price: // value for 'price'
+ *      description: // value for 'description'
+ *   },
+ * });
+ */
+export function useCreateCartMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateCartMutation, CreateCartMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateCartMutation, CreateCartMutationVariables>(CreateCartDocument, baseOptions);
+      }
+export type CreateCartMutationHookResult = ReturnType<typeof useCreateCartMutation>;
+export type CreateCartMutationResult = ApolloReactCommon.MutationResult<CreateCartMutation>;
+export type CreateCartMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateCartMutation, CreateCartMutationVariables>;
 export const CreateCustomerDocument = gql`
     mutation CreateCustomer($userId: String!, $name: String!, $emails: String!, $customerId: String!, $payerId: String!, $clientId: String!, $verifiedAccount: String!) {
   createCustomer(userId: $userId, name: $name, emails: $emails, customerId: $customerId, payerId: $payerId, verifiedAccount: $verifiedAccount) {

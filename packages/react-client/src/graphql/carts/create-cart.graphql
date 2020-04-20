@@ -1,0 +1,36 @@
+mutation CreateCart(
+    $partnerId: String!
+    $customerId: String!
+    $productId: String!
+    $name: String!
+    $price: Float!
+    $description: String!
+) {
+    createCart(
+        partnerId: $partnerId
+        customerId: $customerId
+        productId: $productId
+        name: $name
+        price: $price
+        description: $description
+    ) {
+        id
+        name
+        price
+        description
+        createdAt
+        partner {
+            id
+            clientId
+            name
+        }
+        customer {
+            id
+            name
+        }
+        product {
+            id
+            name
+        }
+    }
+}

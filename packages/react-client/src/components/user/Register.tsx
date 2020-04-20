@@ -11,7 +11,7 @@ import {
   FormControlLabel,
   RadioGroup ,
 } from '@material-ui/core'
-import { useRegisterMutation } from '../../graphql'
+import { useRegisterMutation} from '../../graphql'
 import {RouteComponentProps} from 'react-router-dom'
 const styles = (theme: any) => ({
   app: {

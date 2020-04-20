@@ -3,7 +3,7 @@ const merge = require('webpack-merge');
 const nodeExternals = require('webpack-node-externals');
 const path = require('path');
 const webpack = require('webpack');
-
+const Dotenv = require('dotenv-webpack');
 const common = require('./webpack.common.js');
 
 module.exports = merge.smart(common, {
@@ -15,6 +15,6 @@ module.exports = merge.smart(common, {
         })
     ],
     mode: 'development',
-    plugins: [new CleanWebpackPlugin(), new webpack.HotModuleReplacementPlugin()],
+    plugins: [new Dotenv(), new CleanWebpackPlugin(), new webpack.HotModuleReplacementPlugin()],
     watch: true
 });

@@ -16,7 +16,8 @@ import { ApolloLink, Observable } from 'apollo-link'
 import { TokenRefreshLink } from 'apollo-link-token-refresh'
 import jwtDecode from 'jwt-decode'
 import { BASE_API } from './config/config'
-
+import * as dotenv from 'dotenv'
+dotenv.config()
 const cache = new InMemoryCache({})
 
 const requestLink = new ApolloLink(
@@ -64,13 +65,11 @@ const client = new ApolloClient({
         try {
           const { exp } = jwtDecode(token.accessToken)
           if (Date.now() >= exp * 1000) {
-            localStorage.removeItem('user')
             return false
           } else {
             return true
           }
         } catch {
-          localStorage.removeItem('user')
           return false
         }
       },

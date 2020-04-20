@@ -93,7 +93,11 @@ class NavBar extends React.Component<Props, State> {
       case 'products':
         this.props.history.push('/products')
         break
+      case 'carts':
+        this.props.history.push('/my-carts')
+        break
       default:
+        this.props.history.push('/')
         break
     }
   }
@@ -121,15 +125,21 @@ class NavBar extends React.Component<Props, State> {
         <div className={classes.root}>
           <AppBar position="fixed">
             <Toolbar>
-              {/*<IconButton*/}
-              {/*    edge="start"*/}
-              {/*    className={classes.menuButton}*/}
-              {/*    color="inherit"*/}
-              {/*    aria-label="menu"*/}
-              {/*    onClick={()=>this.setState({tab:''},()=>this.props.history.push('/'))}*/}
-              {/*>*/}
-              {/*  {name && <HomeIcon/>}*/}
-              {/*</IconButton>*/}
+              {userCredential.role==='CustomerUser' &&
+              <>
+                <IconButton
+                    edge="start"
+                    className={classes.menuButton}
+                    color="inherit"
+                    aria-label="menu"
+                    onClick={()=>this.setState({tab:''},()=>this.props.history.push('/'))}
+                >
+                  {name && <HomeIcon/>}
+                </IconButton>
+                <Link to="/my-carts" style={{ textTransform: 'none' }}>
+                  My Carts
+                </Link>
+              </>}
 
               <Typography variant="h6" className={classes.title}>
                 {(userCredential.role==='AdminUser' || userCredential.role==='BusinessUser') && (
@@ -163,6 +173,7 @@ class NavBar extends React.Component<Props, State> {
                             value="products"
                             className={classes.tabItem}
                         />}
+
                       </Tabs>
                     </>
                 )}
@@ -204,11 +215,6 @@ class NavBar extends React.Component<Props, State> {
                         open={open}
                         onClose={this.handleClose}
                     >
-                      <MenuItem>
-                        <Link to="/user/profile" style={{ textTransform: 'none' }}>
-                          Profile
-                        </Link>
-                      </MenuItem>
                       <MenuItem onClick={this.handleClose}>{email}</MenuItem>
                       <Logout {...this.props}/>
                     </Menu>

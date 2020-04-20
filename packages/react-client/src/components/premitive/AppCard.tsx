@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import {CardActionArea, FormLabel, CardActions, CardContent, CardMedia, Typography, Button } from '@material-ui/core';
-import PayPalCheckoutButton from "./PayPalCheckoutButton";
-import {PaypalOptions} from "react-paypal-button";
-import {PAYPAL_CLIENT_ID} from "../../config/config";
+import {useCreateCartMutation} from "../../graphql";
+import {AppCredential, getAppCredential} from "../../config/accessToken";
+import AppAlert from "./AppAlert";
 
 const useStyles = makeStyles({
     root: {
@@ -21,12 +21,13 @@ const useStyles = makeStyles({
         justifyItems:'flex-end'
     }
 });
-interface Props {
+interface Props{
     clientId?: string
     title: string
     description?: string
     price?: number
     imageUrl?: string
+    product?: any
     checkout?: boolean
     isVideo?: boolean
 }
@@ -51,15 +52,40 @@ const RenderMedia:React.FC<MediaProps>=(props: MediaProps)=>{
         />
     )
 }
-
+type MessageType= 'success' | 'error'
 const AppCard:React.FC<Props>=(props: Props)=> {
+    // @ts-ignore
+    let userCredential:AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
+    const [cartMutation] = useCreateCartMutation()
     const classes = useStyles();
-    const {clientId=PAYPAL_CLIENT_ID,title, description, price, imageUrl=`https://via.placeholder.com/345x140.png?text=`, checkout=false, isVideo=false}= props
-    const amount:number= price===undefined?0:price
+    const {title, description, price, imageUrl=`https://via.placeholder.com/345x140.png?text=`, checkout=false, isVideo=false, product}= props
+    const [message, setMessage] = useState('')
+    const [messageType, setMessageType] = useState<MessageType>('success')
+    // const amount:number= price===undefined?0:price
+    // const paypalOptions:PaypalOptions = {
+    //     clientId: clientId,
+    //     intent: 'capture'
+    // }
 
-    const paypalOptions:PaypalOptions = {
-        clientId: clientId,
-        intent: 'capture'
+    const addToCart=async (product: any)=>{
+        console.log('product==addToCart====',product)
+        const {data} = await cartMutation({
+            variables:{
+                partnerId: product.partner.id,
+                customerId:userCredential.businessUserId,
+                productId: product.id,
+                name: product.name,
+                price: product.price,
+                description: product.description
+            }
+        })
+        if(data) {
+            setMessage('Added to cart')
+        }
+        else {
+            setMessage('Something error. Please try again.')
+            setMessageType('error')
+        }
     }
 
     return (
@@ -67,6 +93,10 @@ const AppCard:React.FC<Props>=(props: Props)=> {
             <CardActionArea>
                 <RenderMedia url={imageUrl} title={title} isVideo={isVideo}/>
                 <CardContent>
+                    {message &&
+                    <Typography gutterBottom variant="h5" component="h2">
+                       <AppAlert message={message} alertType={messageType}/>
+                    </Typography>}
                     <Typography gutterBottom variant="h5" component="h2">
                         <FormLabel component="legend"><span className={classes.title}>{title} </span></FormLabel>
                     </Typography>
@@ -81,7 +111,10 @@ const AppCard:React.FC<Props>=(props: Props)=> {
                     <strong>{'$'+price.toString()}</strong>
                 </Button>}
                 {checkout &&
-                <PayPalCheckoutButton key={title.replace(' ','_')} paypalOptions={paypalOptions} amount={amount}/>
+                <Button size="small" color="primary" onClick={()=>addToCart(product)} style={{textDecoration: 'none'}}>
+                    Add to cart
+                </Button>
+                    // <PayPalCheckoutButton key={product.id} product={product} paypalOptions={paypalOptions} amount={amount}/>
                 }
             </CardActions>
         </Card>

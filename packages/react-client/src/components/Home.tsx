@@ -65,7 +65,7 @@ const Home: React.FC<Props> = (props: any) => {
                     {!loading && products.map((product: any) => {
                         return (
                             < Grid item xs={3} key={product.id}>
-                                <AppCard key={product.id} title={product.name} price={product.price} description={product.description} checkout/>
+                                <AppCard product={product} key={product.id} title={product.name} price={product.price} description={product.description} checkout/>
                             </Grid>
                         )
                     })

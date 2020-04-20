@@ -1,0 +1,22 @@
+query Carts( $customerId: String!) {
+    carts(customerId: $customerId) {
+        id
+        name
+        price
+        description
+        createdAt
+        partner {
+            id
+            clientId
+            name
+        }
+        customer {
+            id
+            name
+        }
+        product {
+            id
+            name
+        }
+    }
+}

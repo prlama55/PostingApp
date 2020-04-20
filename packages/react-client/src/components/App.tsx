@@ -12,7 +12,7 @@ const App: React.FC = () => {
       }
 
   }, [])
-
+console.log("env=====", process.env.BASE_API)
   return (
     <BrowserRouter>
       <Route path="/" render={props => <NavBar {...props} />} />

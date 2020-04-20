@@ -1,4 +1,4 @@
-import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware } from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware, Authorized} from "type-graphql";
 import { User, UserModel } from "../models/User";
 import { hash } from 'bcryptjs'
 import {isAuth} from "../authorization/auth";
@@ -14,6 +14,7 @@ export class UserResolver {
 
     @Query(() => [User])
     @UseMiddleware(isAuth)
+    @Authorized("AdminUser")
     async users(){
         return UserModel.find();
     };
@@ -38,17 +39,18 @@ export class UserResolver {
         @Arg("userType") userType: string
     ) {
         const hashPass= await hash(password,12)
-        const user:any = (await UserModel.create({
+        const user:any = await (await UserModel.create({
             email,
             firstName,
             lastName,
             userType,
             password: hashPass
         })).save();
-        if(user.userType==='CustomerUser'){
+        if(userType==='CustomerUser'){
             (await CustomerModel.create({
-                name: `${user.firstName} ${user.lastName}`,
-                emails: `${user.email}`
+                userId: user.id,
+                name: `${firstName} ${lastName}`,
+                emails: `${email}`
             })).save();
         }
         return user? true: false;

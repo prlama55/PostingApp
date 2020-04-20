@@ -1,4 +1,4 @@
-import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware, Authorized} from "type-graphql";
 import {Post, PostModel} from "../models/Post";
 import {User, UserModel} from "../models/User";
 import {isAuth} from "../authorization/auth";
@@ -20,6 +20,7 @@ export class PostResolver {
 
     @UseMiddleware(isAuth)
     @Mutation(() => Post)
+    @Authorized("AdminUser","BusinessUser")
     async createPost(
         @Arg('userId') userId: string,
         @Arg('postType') postType: string,
@@ -39,6 +40,7 @@ export class PostResolver {
 
     @UseMiddleware(isAuth)
     @Mutation(() => Boolean)
+    @Authorized("AdminUser","BusinessUser")
     async deletePost(@Arg("id") id: string) {
         await PostModel.deleteOne({id});
         return true;

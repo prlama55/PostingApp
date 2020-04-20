@@ -3,6 +3,22 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""The Cart model"""
+type Cart {
+  id: ID!
+  name: String!
+  price: Float!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  partnerId: String!
+  partner: Partner!
+  customerId: String!
+  customer: Customer!
+  productId: String!
+  product: Product!
+}
+
 """The Partner model"""
 type Customer {
   id: ID!
@@ -48,6 +64,8 @@ type Mutation {
   deleteProduct(id: String!): Boolean!
   createOrder(description: String!, price: Float!, name: String!, productId: String!, customerId: String!, partnerId: String!): Order!
   deleteOrder(id: String!): Boolean!
+  createCart(description: String!, price: Float!, name: String!, productId: String!, customerId: String!, partnerId: String!): Cart!
+  deleteCart(id: String!): Boolean!
 }
 
 """The Partner model"""
@@ -120,6 +138,8 @@ type Query {
   products: [Product!]!
   order(id: String!): Order!
   orders: [Order!]!
+  cart(id: String!): Cart!
+  carts(customerId: String!): [Cart!]!
 }
 
 """The Users model"""

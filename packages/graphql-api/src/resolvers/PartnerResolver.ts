@@ -1,4 +1,4 @@
-import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
+import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware, Authorized} from "type-graphql";
 import {User, UserModel} from "../models/User";
 import {Partner, PartnerModel} from "../models/Partner";
 import {isAuth} from "../authorization/auth";
@@ -20,6 +20,7 @@ export class PartnerResolver {
 
     @UseMiddleware(isAuth)
     @Mutation(() => Partner)
+    @Authorized("BusinessUser")
     async createPartner(
         @Arg('userId') userId: string,
         @Arg('name') name: string,

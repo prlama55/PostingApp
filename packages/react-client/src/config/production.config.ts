@@ -1,5 +1,5 @@
 export const {
-    NODE_ENV='development',
+    NODE_ENV='production',
     PAYPAL_CLIENT_ID='AToOrRCR3xwa1hs6T5MVv9m7Xi8XCKqvXVM8rVuP1GyUqlhEJ0XZZh6zCKo2pOlosTBV_HEaoj5yVm79',
     PAYPAL_SECRET='ECImpB7zi52-92bVl8Jy6MtNpG6W7M3eJKXddsc6UtC_Swh-QyMd4Yx4flXabwYz6z6mawliOk5tr3HE',
     REDIRECT_URL='http://50.17.184.113:5000/user/profile/',
