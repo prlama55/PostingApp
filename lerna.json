@@ -1,7 +1,7 @@
 
 {
   "packages": ["packages/*"],
-  "npmClient": "yarn",
+  "npmClient": "yarn --mutex file",
   "useWorkspaces": true,
   "version": "1.0.0"
 }
