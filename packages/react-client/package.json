@@ -20,6 +20,7 @@
     "dotenv": "^8.2.0",
     "entropy-string": "^4.2.0",
     "env-cmd": "^10.1.0",
+    "express": "^4.17.1",
     "graphql": "^14.6.0",
     "html-webpack-plugin": "latest",
     "jwt-decode": "^2.2.0",
