@@ -47,7 +47,7 @@ class App {
     // @ts-ignore
     this.app.use(cors({
       credentials: true,
-      origin: ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:3000",  "http://50.17.184.113:5000"]
+      origin: ["http://localhost:3000", "http://localhost:5000", "http://127.0.0.1:3000", "http://50.17.184.113", "http://50.17.184.113:5000", "http://50.17.184.113:3000"]
     }))
     this.app.use(bodyParser.json({ limit: '50mb' }))
     this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
