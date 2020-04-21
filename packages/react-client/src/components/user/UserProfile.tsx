@@ -10,7 +10,7 @@ import {RouteComponentProps} from 'react-router-dom'
 import queryString from 'query-string'
 import qs from 'qs'
 import axios, {AxiosRequestConfig} from 'axios'
-import {PAYPAL_USER_URL, PAYPAL_CREDENTIAL, PAYPAL_TOKEN_URL} from "../../config/config";
+import {REACT_APP_PAYPAL_USER_URL, REACT_APP_PAYPAL_CREDENTIAL, REACT_APP_PAYPAL_TOKEN_URL} from "../../config/config";
 import {AppCredential, getAppCredential, setAppCredential} from "../../config/accessToken";
 import {
   useCreatePartnerMutation,
@@ -187,10 +187,10 @@ const UserProfile: React.FC<Props> = (props: Props) => {
   const options:AxiosRequestConfig = {
     method: 'POST',
     headers: {
-      'Authorization': `Basic ${PAYPAL_CREDENTIAL}`
+      'Authorization': `Basic ${REACT_APP_PAYPAL_CREDENTIAL}`
     },
     data: qs.stringify(reqData),
-    url: PAYPAL_TOKEN_URL,
+    url: REACT_APP_PAYPAL_TOKEN_URL,
   };
 
   const submit = async () => {
@@ -207,7 +207,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer  ${getAccessToken.data.access_token}`
         },
-        url:PAYPAL_USER_URL,
+        url:REACT_APP_PAYPAL_USER_URL,
       };
 
       const getUserData= await axios(userOptions)
@@ -248,8 +248,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
         message: 'Your business profile has been updated..',
       })
     }
-
-
+    props.history.push('/products')
   }
   return (
       <div className={classes.app}>
@@ -263,16 +262,13 @@ const UserProfile: React.FC<Props> = (props: Props) => {
                     {alertMessage.message && <AppAlert {...alertMessage}/>}
                   </Grid>
                 </Grid>
-                {getToken.businessUserId && getToken.role==='BusinessUser' &&
+                {getToken.businessUserId!=='' && getToken.role==='BusinessUser' &&
                 <BusinessProfile/>
                 }
-                {getToken.businessUserId && getToken.role==='CustomerUser' &&
+                {getToken.businessUserId!=='' && getToken.role==='CustomerUser' &&
                 <CustomerProfile/>
                 }
-                {getToken.role==='AdminUser' &&
-                <UserInfo/>
-                }
-                {getToken.role==='CustomerUser' && getToken.businessUserId==='' &&
+                {(getToken.role==='AdminUser' || (getToken.businessUserId==='' && getToken.role==='CustomerUser')) &&
                 <UserInfo/>
                 }
                 {getToken.businessUserId==='' && getToken.role==='BusinessUser' &&

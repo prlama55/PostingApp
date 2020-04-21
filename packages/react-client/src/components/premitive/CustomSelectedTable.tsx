@@ -7,7 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
-import { PAYPAL_CLIENT_ID } from '../../config/config';
+import { REACT_APP_PAYPAL_CLIENT_ID } from '../../config/config';
 import {PaypalOptions} from "react-paypal-button";
 
 
@@ -16,7 +16,7 @@ interface Props{
 }
 const CustomSelectedTable: React.FC<Props>=(props: Props)=> {
     const {rows}= props
-    let {clientId=PAYPAL_CLIENT_ID}= rows[0].partner
+    let {clientId=REACT_APP_PAYPAL_CLIENT_ID}= rows[0].partner
     const paypalOptions:PaypalOptions = {
         clientId: clientId,
         intent: 'capture'

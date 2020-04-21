@@ -15,7 +15,7 @@ import { onError } from 'apollo-link-error'
 import { ApolloLink, Observable } from 'apollo-link'
 import { TokenRefreshLink } from 'apollo-link-token-refresh'
 import jwtDecode from 'jwt-decode'
-import { BASE_API } from './config/config'
+import { REACT_APP_BASE_API } from './config/config'
 import * as dotenv from 'dotenv'
 dotenv.config()
 const cache = new InMemoryCache({})
@@ -74,7 +74,7 @@ const client = new ApolloClient({
         }
       },
       fetchAccessToken: () => {
-        return fetch(`${BASE_API}/refresh_token`, {
+        return fetch(`${REACT_APP_BASE_API}/refresh_token`, {
           method: 'POST',
           credentials: 'include',
         })
@@ -130,7 +130,7 @@ const client = new ApolloClient({
     }),
     requestLink,
     new HttpLink({
-      uri: `${BASE_API}/graphql`,
+      uri: `${REACT_APP_BASE_API}/graphql`,
       credentials: 'include',
     }),
   ]),

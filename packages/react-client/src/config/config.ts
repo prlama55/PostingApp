@@ -1,21 +1,20 @@
 export const {
-    NODE_ENV='development',
-    PAYPAL_CLIENT_ID='AToOrRCR3xwa1hs6T5MVv9m7Xi8XCKqvXVM8rVuP1GyUqlhEJ0XZZh6zCKo2pOlosTBV_HEaoj5yVm79',
-    PAYPAL_SECRET='ECImpB7zi52-92bVl8Jy6MtNpG6W7M3eJKXddsc6UtC_Swh-QyMd4Yx4flXabwYz6z6mawliOk5tr3HE',
-    REDIRECT_URL='http://50.17.184.113:3000/user/profile/',
-    PAYPAL_AUTH_URL='https://www.sandbox.paypal.com/signin/authorize',
-    PAYPAL_TOKEN_URL='https://api.sandbox.paypal.com/v1/oauth2/token',
-    PAYPAL_USER_URL='https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1',
-    PAYPAL_SCOPE='openid profile email address https://uri.paypal.com/services/paypalattributes',
-    BASE_API='http://50.17.184.113:4000',
-    REFRESH_TOKEN_LIFETIME='7d'
+    REACT_APP_PAYPAL_CLIENT_ID='AToOrRCR3xwa1hs6T5MVv9m7Xi8XCKqvXVM8rVuP1GyUqlhEJ0XZZh6zCKo2pOlosTBV_HEaoj5yVm79',
+    REACT_APP_PAYPAL_SECRET='ECImpB7zi52-92bVl8Jy6MtNpG6W7M3eJKXddsc6UtC_Swh-QyMd4Yx4flXabwYz6z6mawliOk5tr3HE',
+    REACT_APP_REDIRECT_URL='http://localhost:3000/user/profile/',
+    REACT_APP_PAYPAL_AUTH_URL='https://www.sandbox.paypal.com/signin/authorize',
+    REACT_APP_PAYPAL_TOKEN_URL='https://api.sandbox.paypal.com/v1/oauth2/token',
+    REACT_APP_PAYPAL_USER_URL='https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1',
+    REACT_APP_PAYPAL_SCOPE='openid profile email address https://uri.paypal.com/services/paypalattributes',
+    REACT_APP_BASE_API='http://127.0.0.1:4000',
+    REACT_APP_REFRESH_TOKEN_LIFETIME='7d'
 }= process.env
 
-export const PAYPAL_CREDENTIAL=btoa(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET}`)
+export const REACT_APP_PAYPAL_CREDENTIAL=btoa(`${REACT_APP_PAYPAL_CLIENT_ID}:${REACT_APP_PAYPAL_SECRET}`)
 export const paypalConfigOption: any={
-    url: PAYPAL_AUTH_URL,
-    client_id: PAYPAL_CLIENT_ID,
-    scope: PAYPAL_SCOPE,
+    url: REACT_APP_PAYPAL_AUTH_URL,
+    client_id: REACT_APP_PAYPAL_CLIENT_ID,
+    scope: REACT_APP_PAYPAL_SCOPE,
     responseType: 'code',
-    redirect_uri: REDIRECT_URL
+    redirect_uri: REACT_APP_REDIRECT_URL
 }

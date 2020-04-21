@@ -5,12 +5,12 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Typography from '@material-ui/core/Typography'
 import Toolbar from '@material-ui/core/Toolbar'
 import { Button, IconButton } from '@material-ui/core'
 import { getAppCredential, setAppCredential } from '../../config/accessToken'
 import MenuItem from '@material-ui/core/MenuItem'
-import Menu from '@material-ui/core/Menu'
 import AccountCircle from '@material-ui/icons/AccountCircle'
 import { useLogoutMutation } from '../../graphql'
 
@@ -34,7 +34,7 @@ const Logout: React.FC<RouteComponentProps> = (props) => {
             props.history.push('/login')
           }}
       >
-        Logout
+        Logout<ExitToAppIcon/>
       </MenuItem>
   )
 }
@@ -68,7 +68,6 @@ const styles = (theme: any) => ({
 type Props = WithStyles & RouteComponentProps
 interface State {
   tab: string
-  anchorEl: any
 }
 class NavBar extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -77,7 +76,6 @@ class NavBar extends React.Component<Props, State> {
     const {pathname}= location
     this.state = {
       tab: (pathname==='/')?'':pathname.replace('/',''),
-      anchorEl: null,
     }
   }
 
@@ -102,25 +100,17 @@ class NavBar extends React.Component<Props, State> {
     }
   }
 
-  handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    this.setState({
-      anchorEl: event.currentTarget,
-    })
+  handleMenu = (_event: React.MouseEvent<HTMLElement>) => {
+    this.props.history.push('/profile')
   }
 
-  handleClose = () => {
-    this.setState({
-      anchorEl: null,
-    })
-  }
 
   render() {
     const { classes } = this.props
-    const { tab, anchorEl } = this.state
-    const open = Boolean(anchorEl)
+    const { tab } = this.state
     // @ts-ignore
     let userCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
-    const { email, name } = userCredential
+    const { name } = userCredential
     return (
         <div className={classes.root}>
           <AppBar position="fixed">
@@ -197,27 +187,9 @@ class NavBar extends React.Component<Props, State> {
                         onClick={this.handleMenu}
                         color="inherit"
                     >
-                      <AccountCircle />
-                      {name}
+                      <AccountCircle /> {name}
                     </IconButton>
-                    <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right',
-                        }}
-                        open={open}
-                        onClose={this.handleClose}
-                    >
-                      <MenuItem onClick={this.handleClose}>{email}</MenuItem>
-                      <Logout {...this.props}/>
-                    </Menu>
+                    <Logout {...this.props}/>
                   </>
               )}
             </Toolbar>
