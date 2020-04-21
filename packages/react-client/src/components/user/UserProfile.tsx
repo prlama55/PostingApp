@@ -200,7 +200,10 @@ const UserProfile: React.FC<Props> = (props: Props) => {
         message: 'Please enter PayPal clientID.',
       })
     }else{
+      console.log("options=====",options)
       const getAccessToken= await axios(options)
+      console.log("${getAccessToken.data.access_token}=====",getAccessToken.data.access_token)
+
       const userOptions:AxiosRequestConfig = {
         method: 'GET',
         headers: {
@@ -209,7 +212,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
         },
         url:REACT_APP_PAYPAL_USER_URL,
       };
-
+console.log("userOptions====",userOptions)
       const getUserData= await axios(userOptions)
       const data: any= getUserData.data
       let email=''
