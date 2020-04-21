@@ -135,7 +135,7 @@ type Query {
   customer(id: String!): Customer!
   customers: [Customer!]!
   product(id: String!): Product!
-  products(partnerId: String!): [Product!]!
+  products: [Product!]!
   order(id: String!): Order!
   orders(partnerId: String!): [Order!]!
   cart(id: String!): Cart!

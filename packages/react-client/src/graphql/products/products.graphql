@@ -1,5 +1,5 @@
-query Products( $partnerId: String!) {
-    products(partnerId: $partnerId) {
+query Products {
+    products {
         id
         name
         price

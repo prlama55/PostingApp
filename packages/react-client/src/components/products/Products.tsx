@@ -62,9 +62,6 @@ const Products: React.FC<Props> = (props) => {
     const appCredential:AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
     let productList: ProductType[] = []
     const { data, loading }: any = useProductsQuery({
-        variables: {
-            partnerId: appCredential.businessUserId
-        },
         fetchPolicy: 'network-only',
     })
     if (!loading && data) {

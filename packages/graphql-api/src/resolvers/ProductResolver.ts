@@ -14,8 +14,8 @@ export class ProductResolver {
 
     @Query(() => [Product])
     @UseMiddleware(isAuth)
-    async products(@Arg('partnerId') partnerId: string){
-        return ProductModel.find({partnerId:partnerId});
+    async products(){
+        return ProductModel.find();
     };
 
     @Mutation(() => Product)

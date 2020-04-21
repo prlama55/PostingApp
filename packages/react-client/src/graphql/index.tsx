@@ -301,11 +301,6 @@ export type QueryProductArgs = {
 };
 
 
-export type QueryProductsArgs = {
-  partnerId: Scalars['String'];
-};
-
-
 export type QueryOrderArgs = {
   id: Scalars['String'];
 };
@@ -617,9 +612,7 @@ export type CreateProductMutation = (
   ) }
 );
 
-export type ProductsQueryVariables = {
-  partnerId: Scalars['String'];
-};
+export type ProductsQueryVariables = {};
 
 
 export type ProductsQuery = (
@@ -1318,8 +1311,8 @@ export type CreateProductMutationHookResult = ReturnType<typeof useCreateProduct
 export type CreateProductMutationResult = ApolloReactCommon.MutationResult<CreateProductMutation>;
 export type CreateProductMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProductMutation, CreateProductMutationVariables>;
 export const ProductsDocument = gql`
-    query Products($partnerId: String!) {
-  products(partnerId: $partnerId) {
+    query Products {
+  products {
     id
     name
     price
@@ -1346,7 +1339,6 @@ export const ProductsDocument = gql`
  * @example
  * const { data, loading, error } = useProductsQuery({
  *   variables: {
- *      partnerId: // value for 'partnerId'
  *   },
  * });
  */

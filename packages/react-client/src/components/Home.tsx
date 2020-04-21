@@ -31,9 +31,6 @@ const Home: React.FC<Props> = (props: any) => {
         fetchPolicy: 'network-only',
     })
     const productQuery: any = useProductsQuery({
-        variables: {
-            partnerId: userCredential.businessUserId
-        },
         fetchPolicy: 'network-only',
     })
 
