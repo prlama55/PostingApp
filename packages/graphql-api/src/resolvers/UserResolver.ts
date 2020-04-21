@@ -49,6 +49,9 @@ export class UserResolver {
         if(userType==='CustomerUser'){
             (await CustomerModel.create({
                 userId: user.id,
+                verifiedAccount: 'false',
+                customerId: user.id,
+                payerId: user.id,
                 name: `${firstName} ${lastName}`,
                 emails: `${email}`
             })).save();
