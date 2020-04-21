@@ -1,22 +1,21 @@
-query Orders {
-    orders {
+query Orders( $partnerId: String!) {
+    orders(partnerId: $partnerId) {
         id
         name
         price
         description
         createdAt
-        partner {
-            id
-            clientId
-            name
-        }
         customer {
             id
             name
         }
-        product {
+        products {
             id
             name
+            partner {
+                id
+                name
+            }
         }
     }
 }

@@ -1,15 +1,15 @@
 mutation CreateOrder(
     $partnerId: String!
     $customerId: String!
-    $productId: String!
+    $productIds: String!
     $name: String!
     $price: Float!
     $description: String!
 ) {
     createOrder(
-        partnerId: $partnerId
+        payerId: $partnerId
         customerId: $customerId
-        productId: $productId
+        productIds: $productIds
         name: $name
         price: $price
         description: $description
@@ -19,18 +19,17 @@ mutation CreateOrder(
         price
         description
         createdAt
-        partner {
-            id
-            clientId
-            name
-        }
         customer {
             id
             name
         }
-        product {
+        products {
             id
             name
+            partner {
+                id
+                name
+            }
         }
     }
 }

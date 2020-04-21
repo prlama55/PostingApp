@@ -23,11 +23,17 @@ const styles = () => ({
 })
 type Props= WithStyles & RouteComponentProps
 const Home: React.FC<Props> = (props: any) => {
+    // @ts-ignore
+    let userCredential: AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
+
     const { classes } = props
     const postQuery: any = usePostsQuery({
         fetchPolicy: 'network-only',
     })
     const productQuery: any = useProductsQuery({
+        variables: {
+            partnerId: userCredential.businessUserId
+        },
         fetchPolicy: 'network-only',
     })
 
@@ -43,8 +49,6 @@ const Home: React.FC<Props> = (props: any) => {
         loading= productQuery.loading
     }
 
-    // @ts-ignore
-    let userCredential: AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()): getAppCredential()
     const hasBusiness=(userCredential.role==='BusinessUser' && !userCredential.hasBusiness)
     return (
         <div className={classes.app}>
@@ -82,7 +86,8 @@ const Home: React.FC<Props> = (props: any) => {
                     {posts.map((post: any) => {
                         return (
                             < Grid item xs={3} key={post.id}>
-                                <AppCard key={post.id} imageUrl={post.post} title={post.title} isVideo={post.postType==='video'} description={post.description}/>
+                                {post.postType==='video' && <AppCard key={post.id} imageUrl={post.videoUrl} title={post.title} isVideo description={post.description}/>}
+                                {post.postType!=='video' && <AppCard key={post.id} imageUrl={post.videoUrl} title={post.title} description={post.description}/>}
                             </Grid>
                         )
                     })

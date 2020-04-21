@@ -52,6 +52,24 @@ export class CartResolver {
         return true;
     }
 
+    @UseMiddleware(isAuth)
+    @Authorized("CustomerUser")
+    @Mutation(() => Boolean)
+    async removeCarts(@Arg("ids") ids: string){
+        const cartIds= ids.split(',')
+        console.log("cartIds=====",cartIds)
+        try{
+           await CartModel.deleteMany({
+                _id: {
+                    $in: cartIds
+                }
+            });
+            return true;
+        }catch (e) {
+            return false;
+        }
+    };
+
     @FieldResolver()
     async partner(@Root() cart: Cart): Promise<Partner| null> {
         return (await PartnerModel.findById(cart._doc.partnerId))

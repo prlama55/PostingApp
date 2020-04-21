@@ -6,7 +6,7 @@ import {
 import { RouteComponentProps } from 'react-router-dom'
 import {getAppCredential} from "../../config/accessToken";
 import Loading from '../core/Loading'
-import CustomTable from "../premitive/CustomTable";
+import CustomEditableTable from "../premitive/CustomEditableTable";
 const styles = (theme: any) => ({
     app: {
         flexGrow: 1,
@@ -148,7 +148,7 @@ const Posts: React.FC<Props> = (props) => {
                         {/*    }}*/}
                         {/*/>*/}
                         {loading && <Loading/>}
-                        {!loading && <CustomTable
+                        {!loading && <CustomEditableTable
                             title="Posts"
                             columns={columns}
                             data={posts}

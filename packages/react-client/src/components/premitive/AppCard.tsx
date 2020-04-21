@@ -5,6 +5,7 @@ import {CardActionArea, FormLabel, CardActions, CardContent, CardMedia, Typograp
 import {useCreateCartMutation} from "../../graphql";
 import {AppCredential, getAppCredential} from "../../config/accessToken";
 import AppAlert from "./AppAlert";
+import ReactPlayer from 'react-player'
 
 const useStyles = makeStyles({
     root: {
@@ -19,6 +20,15 @@ const useStyles = makeStyles({
     button:{
         float: 'right',
         justifyItems:'flex-end'
+    },
+    playerWrapper: {
+        position: 'relative',
+        paddingTop: '56.25% '
+    },
+    reactPlayer: {
+        position: 'absolute',
+        top: 0,
+        left: 0
     }
 });
 interface Props{
@@ -34,16 +44,49 @@ interface Props{
 interface MediaProps {
     url: string, title: string, isVideo:boolean
 }
+
+function getExtension(filename: string) {
+    let parts = filename.split('.');
+    return parts[parts.length - 1];
+}
+
+const isVideoFile=(ext: string)=>{
+    switch (ext.toLowerCase()) {
+        case 'm4v':
+        case 'avi':
+        case 'mpg':
+        case 'mp4':
+        case 'ogg':
+        case 'webm':
+            return true;
+    }
+    return false;
+}
+
 const RenderMedia:React.FC<MediaProps>=(props: MediaProps)=>{
     const classes = useStyles();
     const { url, title, isVideo}= props
+    const [playing, setPlaying]= useState(false)
+    let ext = getExtension(url);
+    const isFile=isVideoFile(ext)
     return isVideo?(
-        <CardMedia
-            className={classes.media}
-            component='iframe'
-            title={title}
-            src={url}
-        />
+        <div className='playerWrapper'>
+            {isFile && <ReactPlayer
+                controls
+                playing={playing}
+                onClick={()=>setPlaying(!playing)}
+                className='reactPlayer'
+                url={[ {src: url, type: `video/${ext}`}]}
+                width='100%'
+                height='100%'
+            />}
+            {!isFile && <ReactPlayer
+                className='reactPlayer'
+                url={url}
+                width='100%'
+                height='100%'
+            />}
+        </div>
     ):(
         <CardMedia
             className={classes.media}
@@ -68,7 +111,6 @@ const AppCard:React.FC<Props>=(props: Props)=> {
     // }
 
     const addToCart=async (product: any)=>{
-        console.log('product==addToCart====',product)
         const {data} = await cartMutation({
             variables:{
                 partnerId: product.partner.id,
@@ -95,7 +137,7 @@ const AppCard:React.FC<Props>=(props: Props)=> {
                 <CardContent>
                     {message &&
                     <Typography gutterBottom variant="h5" component="h2">
-                       <AppAlert message={message} alertType={messageType}/>
+                        <AppAlert message={message} alertType={messageType}/>
                     </Typography>}
                     <Typography gutterBottom variant="h5" component="h2">
                         <FormLabel component="legend"><span className={classes.title}>{title} </span></FormLabel>
@@ -107,14 +149,13 @@ const AppCard:React.FC<Props>=(props: Props)=> {
             </CardActionArea>
             <CardActions>
                 {price &&
-                <Button size="small" color="primary">
-                    <strong>{'$'+price.toString()}</strong>
+                <Button size="small" variant='outlined' color="primary" style={{textTransform: 'none'}}>
+                    {'Price: $'+price.toString()}
                 </Button>}
-                {checkout &&
-                <Button size="small" color="primary" onClick={()=>addToCart(product)} style={{textDecoration: 'none'}}>
+                {(checkout && userCredential.role==='CustomerUser') &&
+                <Button size="small" variant='outlined' color="primary" onClick={()=>addToCart(product)} style={{textTransform: 'none'}}>
                     Add to cart
                 </Button>
-                    // <PayPalCheckoutButton key={product.id} product={product} paypalOptions={paypalOptions} amount={amount}/>
                 }
             </CardActions>
         </Card>

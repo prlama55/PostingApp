@@ -1,7 +1,6 @@
 import {ObjectType, Field, ID} from "type-graphql";
 import { prop as Property, getModelForClass } from "@typegoose/typegoose";
 import {Ref} from "../types";
-import {Partner} from "./Partner";
 import {Customer} from "./Customer";
 import {Product} from "./Product";
 
@@ -31,12 +30,9 @@ export class Order {
     @Property({ required: false})
     updatedAt: Date;
 
-    @Field(_type => String)
-    @Property({ref: Partner})
-    partnerId: Ref<Partner>
-
-    @Field(() => Partner)
-    partner: Partner;
+    @Field()
+    @Property({ required: false })
+    payerId: string;
 
     @Field(_type => String)
     @Property({ref: Customer})
@@ -45,12 +41,12 @@ export class Order {
     @Field(() => Customer)
     customer: Customer;
 
-    @Field(_type => String)
+    @Field(_type => [String])
     @Property({ref: Product})
-    productId: Ref<Product>
+    productIds: Ref<Product>[]
 
-    @Field(() => Product)
-    product: Product;
+    @Field(() => [Product])
+    products: Product[];
 
     _doc: any
 }

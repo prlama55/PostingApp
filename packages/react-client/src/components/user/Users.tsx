@@ -5,8 +5,8 @@ import {
   useUsersQuery,
 } from '../../graphql'
 import { RouteComponentProps } from 'react-router-dom'
-import CustomTable from "../premitive/CustomTable";
-// import randomstring from 'randomstring'
+import CustomEditableTable from "../premitive/CustomEditableTable";
+
 const styles = (theme: any) => ({
   app: {
     flexGrow: 1,
@@ -112,7 +112,7 @@ const Users: React.FC<Props> = props => {
       <Grid container spacing={8}>
         <Grid item xs>
           <Paper className={classes.paper}>
-            <CustomTable
+            <CustomEditableTable
                 title="Users"
                 columns={columns}
                 data={users}

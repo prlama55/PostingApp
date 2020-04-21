@@ -4,9 +4,9 @@ import {
     useCreateProductMutation, useProductsQuery
 } from '../../graphql'
 import { RouteComponentProps } from 'react-router-dom'
-import {getAppCredential} from "../../config/accessToken";
+import {AppCredential, getAppCredential} from "../../config/accessToken";
 import Loading from '../core/Loading'
-import CustomTable from "../premitive/CustomTable";
+import CustomEditableTable from "../premitive/CustomEditableTable";
 const styles = (theme: any) => ({
     app: {
         flexGrow: 1,
@@ -58,9 +58,13 @@ const columns=[
 ]
 type Props = RouteComponentProps<any> & WithStyles & Row
 const Products: React.FC<Props> = (props) => {
-    const appCredential= getAppCredential()
+    // @ts-ignore
+    const appCredential:AppCredential= localStorage.getItem('user')?JSON.parse(localStorage.getItem('user').toString()):  getAppCredential()
     let productList: ProductType[] = []
     const { data, loading }: any = useProductsQuery({
+        variables: {
+            partnerId: appCredential.businessUserId
+        },
         fetchPolicy: 'network-only',
     })
     if (!loading && data) {
@@ -145,7 +149,7 @@ const Products: React.FC<Props> = (props) => {
                 <Grid item xs>
                     <Paper className={classes.paper}>
                         {loading && <Loading/>}
-                        {!loading && <CustomTable
+                        {!loading && <CustomEditableTable
                             title="Products"
                             columns={columns}
                             data={products}

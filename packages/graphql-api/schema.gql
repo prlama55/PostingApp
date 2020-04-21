@@ -62,10 +62,11 @@ type Mutation {
   deleteCustomer(id: String!): Boolean!
   createProduct(description: String!, price: Float!, name: String!, partnerId: String!): Product!
   deleteProduct(id: String!): Boolean!
-  createOrder(description: String!, price: Float!, name: String!, productId: String!, customerId: String!, partnerId: String!): Order!
+  createOrder(description: String!, price: Float!, name: String!, productIds: String!, customerId: String!, payerId: String!): Order!
   deleteOrder(id: String!): Boolean!
   createCart(description: String!, price: Float!, name: String!, productId: String!, customerId: String!, partnerId: String!): Cart!
   deleteCart(id: String!): Boolean!
+  removeCarts(ids: String!): Boolean!
 }
 
 """The Partner model"""
@@ -76,12 +77,11 @@ type Order {
   description: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  partnerId: String!
-  partner: Partner!
+  payerId: String!
   customerId: String!
   customer: Customer!
-  productId: String!
-  product: Product!
+  productIds: [String!]!
+  products: [Product!]!
 }
 
 """The Partner model"""
@@ -135,9 +135,9 @@ type Query {
   customer(id: String!): Customer!
   customers: [Customer!]!
   product(id: String!): Product!
-  products: [Product!]!
+  products(partnerId: String!): [Product!]!
   order(id: String!): Order!
-  orders: [Order!]!
+  orders(partnerId: String!): [Order!]!
   cart(id: String!): Cart!
   carts(customerId: String!): [Cart!]!
 }

@@ -59,7 +59,7 @@ const styles = (theme: any) => ({
     color: 'white',
   },
   tabItem: {
-    width: '80px',
+    width: 'auto',
     minWidth: theme.spacing(0),
     textTransform: 'none',
     color: 'white',
@@ -80,6 +80,7 @@ class NavBar extends React.Component<Props, State> {
   }
 
   handleChange = (_event: any, tab: any) => {
+    console.log("tab=====",tab)
     this.setState({ tab })
     switch (tab) {
       case 'users':
@@ -92,7 +93,10 @@ class NavBar extends React.Component<Props, State> {
         this.props.history.push('/products')
         break
       case 'carts':
-        this.props.history.push('/my-carts')
+        this.props.history.push('/carts')
+        break
+      case 'sales':
+        this.props.history.push('/sales')
         break
       default:
         this.props.history.push('/')
@@ -115,58 +119,50 @@ class NavBar extends React.Component<Props, State> {
         <div className={classes.root}>
           <AppBar position="fixed">
             <Toolbar>
-              {userCredential.role==='CustomerUser' &&
-              <>
-                <IconButton
-                    edge="start"
-                    className={classes.menuButton}
-                    color="inherit"
-                    aria-label="menu"
-                    onClick={()=>this.setState({tab:''},()=>this.props.history.push('/'))}
-                >
-                  {name && <HomeIcon/>}
-                </IconButton>
-                <Link to="/my-carts" style={{ textTransform: 'none' }}>
-                  My Carts
-                </Link>
-              </>}
-
               <Typography variant="h6" className={classes.title}>
-                {(userCredential.role==='AdminUser' || userCredential.role==='BusinessUser') && (
-                    <>
-                      <Tabs
-                          value={tab}
-                          onChange={this.handleChange}
-                          indicatorColor="secondary"
-                          variant="scrollable"
-                          scrollButtons="auto"
-                      >
-                        <Tab
-                            icon={<HomeIcon/>}
-                            label=""
-                            value=""
-                            className={classes.tabItem}
-                        />
-                        {userCredential.role==='AdminUser' && <Tab
-                            label="Users"
-                            value="users"
-                            className={classes.tabItem}
-                        />}
+                <Tabs
+                    value={tab}
+                    onChange={this.handleChange}
+                    indicatorColor="secondary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
+                  <Tab
+                      icon={<HomeIcon/>}
+                      label=""
+                      value=""
+                      className={classes.tabItem}
+                  />
+                  {userCredential.role==='AdminUser' && <Tab
+                      label="Users"
+                      value="users"
+                      className={classes.tabItem}
+                  />}
 
-                        <Tab
-                            label="Posts"
-                            value="posts"
-                            className={classes.tabItem}
-                        />
-                        {userCredential.role==='BusinessUser' && <Tab
-                            label="Products"
-                            value="products"
-                            className={classes.tabItem}
-                        />}
-
-                      </Tabs>
-                    </>
-                )}
+                  {(userCredential.role==='AdminUser' || userCredential.role==='BusinessUser') && <Tab
+                      label="Posts"
+                      value="posts"
+                      className={classes.tabItem}
+                  />}
+                  {userCredential.role==='BusinessUser' &&
+                    <Tab
+                        label="Products"
+                        value="products"
+                        className={classes.tabItem}
+                    />
+                  }
+                  {userCredential.role==='BusinessUser' &&
+                    <Tab
+                        label="Sales"
+                        value="sales"
+                        className={classes.tabItem}
+                    />}
+                  {userCredential.role==='CustomerUser' && <Tab
+                      label="My Carts"
+                      value="carts"
+                      className={classes.tabItem}
+                  />}
+                </Tabs>
               </Typography>
               {!name && (
                   <>
@@ -182,8 +178,6 @@ class NavBar extends React.Component<Props, State> {
                   <>
                     <IconButton
                         aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
                         onClick={this.handleMenu}
                         color="inherit"
                     >

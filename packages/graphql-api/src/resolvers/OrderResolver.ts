@@ -1,6 +1,5 @@
 import {Resolver, Mutation, Arg, Query, FieldResolver, Root, UseMiddleware} from "type-graphql";
 import {Order, OrderModel} from "../models/Order";
-import {Partner, PartnerModel} from "../models/Partner";
 import {Customer, CustomerModel} from "../models/Customer";
 import {Product, ProductModel} from "../models/Product";
 import {isAuth} from "../authorization/auth";
@@ -16,24 +15,34 @@ export class OrderResolver {
 
     @UseMiddleware(isAuth)
     @Query(() => [Order])
-    async orders(){
-        return OrderModel.find();
+    async orders(@Arg('partnerId') partnerId: string){
+        const products= await ProductModel.find({partnerId: partnerId})
+        const orders= await OrderModel.find()
+        const orderList= orders.filter(order=>{
+            return order.productIds.filter(id=>{
+                return products.filter(product=>{
+                    return id===product.id.toString()
+                })
+            })
+        })
+        return orderList
     };
 
     @UseMiddleware(isAuth)
     @Mutation(() => Order)
     async createOrder(
-        @Arg('partnerId') partnerId: string,
+        @Arg('payerId') payerId: string,
         @Arg('customerId') customerId: string,
-        @Arg('productId') productId: string,
+        @Arg('productIds') productIds: string,
         @Arg('name') name: string,
         @Arg('price') price: number,
         @Arg('description') description: string
     ): Promise<Order> {
+        const ids=productIds.split(',')
         const Order = (await OrderModel.create({
-            partnerId,
+            payerId,
             customerId,
-            productId,
+            productIds: ids,
             name,
             price,
             description
@@ -49,18 +58,15 @@ export class OrderResolver {
     }
 
     @FieldResolver()
-    async partner(@Root() order: Order): Promise<Partner| null> {
-        return (await PartnerModel.findById(order._doc.partnerId))
-    }
-
-    @FieldResolver()
     async customer(@Root() order: Order): Promise<Customer| null> {
         return (await CustomerModel.findById(order._doc.customerId))
     }
 
     @FieldResolver()
-    async product(@Root() order: Order): Promise<Product| null> {
-        return (await ProductModel.findById(order._doc.productId))
+    async products(@Root() order: Order): Promise<Product[]> {
+        return (await ProductModel.find({
+            _id: { $in:order._doc.productIds}
+        }))
     }
 
 }

@@ -271,7 +271,7 @@ const UserProfile: React.FC<Props> = (props: Props) => {
                 {(getToken.role==='AdminUser' || (getToken.businessUserId==='' && getToken.role==='CustomerUser')) &&
                 <UserInfo/>
                 }
-                {getToken.businessUserId==='' && getToken.role==='BusinessUser' &&
+                {(getToken.businessUserId==='' && getToken.role==='BusinessUser') &&
                 <>
                   <Grid container spacing={8} alignItems="flex-end">
                     <Grid item md={true} sm={true} xs={true}>

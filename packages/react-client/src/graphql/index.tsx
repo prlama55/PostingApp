@@ -76,6 +76,7 @@ export type Mutation = {
   deleteOrder: Scalars['Boolean'];
   createCart: Cart;
   deleteCart: Scalars['Boolean'];
+  removeCarts: Scalars['Boolean'];
 };
 
 
@@ -166,9 +167,9 @@ export type MutationCreateOrderArgs = {
   description: Scalars['String'];
   price: Scalars['Float'];
   name: Scalars['String'];
-  productId: Scalars['String'];
+  productIds: Scalars['String'];
   customerId: Scalars['String'];
-  partnerId: Scalars['String'];
+  payerId: Scalars['String'];
 };
 
 
@@ -191,6 +192,11 @@ export type MutationDeleteCartArgs = {
   id: Scalars['String'];
 };
 
+
+export type MutationRemoveCartsArgs = {
+  ids: Scalars['String'];
+};
+
 /** The Partner model */
 export type Order = {
    __typename?: 'Order';
@@ -200,12 +206,11 @@ export type Order = {
   description: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-  partnerId: Scalars['String'];
-  partner: Partner;
+  payerId: Scalars['String'];
   customerId: Scalars['String'];
   customer: Customer;
-  productId: Scalars['String'];
-  product: Product;
+  productIds: Array<Scalars['String']>;
+  products: Array<Product>;
 };
 
 /** The Partner model */
@@ -296,8 +301,18 @@ export type QueryProductArgs = {
 };
 
 
+export type QueryProductsArgs = {
+  partnerId: Scalars['String'];
+};
+
+
 export type QueryOrderArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryOrdersArgs = {
+  partnerId: Scalars['String'];
 };
 
 
@@ -373,6 +388,16 @@ export type CreateCartMutation = (
   ) }
 );
 
+export type RemoveCartsMutationVariables = {
+  ids: Scalars['String'];
+};
+
+
+export type RemoveCartsMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'removeCarts'>
+);
+
 export type CreateCustomerMutationVariables = {
   userId: Scalars['String'];
   name: Scalars['String'];
@@ -431,7 +456,7 @@ export type CustomersQuery = (
 export type CreateOrderMutationVariables = {
   partnerId: Scalars['String'];
   customerId: Scalars['String'];
-  productId: Scalars['String'];
+  productIds: Scalars['String'];
   name: Scalars['String'];
   price: Scalars['Float'];
   description: Scalars['String'];
@@ -443,20 +468,23 @@ export type CreateOrderMutation = (
   & { createOrder: (
     { __typename?: 'Order' }
     & Pick<Order, 'id' | 'name' | 'price' | 'description' | 'createdAt'>
-    & { partner: (
-      { __typename?: 'Partner' }
-      & Pick<Partner, 'id' | 'clientId' | 'name'>
-    ), customer: (
+    & { customer: (
       { __typename?: 'Customer' }
       & Pick<Customer, 'id' | 'name'>
-    ), product: (
+    ), products: Array<(
       { __typename?: 'Product' }
       & Pick<Product, 'id' | 'name'>
-    ) }
+      & { partner: (
+        { __typename?: 'Partner' }
+        & Pick<Partner, 'id' | 'name'>
+      ) }
+    )> }
   ) }
 );
 
-export type OrdersQueryVariables = {};
+export type OrdersQueryVariables = {
+  partnerId: Scalars['String'];
+};
 
 
 export type OrdersQuery = (
@@ -464,16 +492,17 @@ export type OrdersQuery = (
   & { orders: Array<(
     { __typename?: 'Order' }
     & Pick<Order, 'id' | 'name' | 'price' | 'description' | 'createdAt'>
-    & { partner: (
-      { __typename?: 'Partner' }
-      & Pick<Partner, 'id' | 'clientId' | 'name'>
-    ), customer: (
+    & { customer: (
       { __typename?: 'Customer' }
       & Pick<Customer, 'id' | 'name'>
-    ), product: (
+    ), products: Array<(
       { __typename?: 'Product' }
       & Pick<Product, 'id' | 'name'>
-    ) }
+      & { partner: (
+        { __typename?: 'Partner' }
+        & Pick<Partner, 'id' | 'name'>
+      ) }
+    )> }
   )> }
 );
 
@@ -588,7 +617,9 @@ export type CreateProductMutation = (
   ) }
 );
 
-export type ProductsQueryVariables = {};
+export type ProductsQueryVariables = {
+  partnerId: Scalars['String'];
+};
 
 
 export type ProductsQuery = (
@@ -755,6 +786,36 @@ export function useCreateCartMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type CreateCartMutationHookResult = ReturnType<typeof useCreateCartMutation>;
 export type CreateCartMutationResult = ApolloReactCommon.MutationResult<CreateCartMutation>;
 export type CreateCartMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateCartMutation, CreateCartMutationVariables>;
+export const RemoveCartsDocument = gql`
+    mutation RemoveCarts($ids: String!) {
+  removeCarts(ids: $ids)
+}
+    `;
+export type RemoveCartsMutationFn = ApolloReactCommon.MutationFunction<RemoveCartsMutation, RemoveCartsMutationVariables>;
+
+/**
+ * __useRemoveCartsMutation__
+ *
+ * To run a mutation, you first call `useRemoveCartsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveCartsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeCartsMutation, { data, loading, error }] = useRemoveCartsMutation({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useRemoveCartsMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<RemoveCartsMutation, RemoveCartsMutationVariables>) {
+        return ApolloReactHooks.useMutation<RemoveCartsMutation, RemoveCartsMutationVariables>(RemoveCartsDocument, baseOptions);
+      }
+export type RemoveCartsMutationHookResult = ReturnType<typeof useRemoveCartsMutation>;
+export type RemoveCartsMutationResult = ApolloReactCommon.MutationResult<RemoveCartsMutation>;
+export type RemoveCartsMutationOptions = ApolloReactCommon.BaseMutationOptions<RemoveCartsMutation, RemoveCartsMutationVariables>;
 export const CreateCustomerDocument = gql`
     mutation CreateCustomer($userId: String!, $name: String!, $emails: String!, $customerId: String!, $payerId: String!, $clientId: String!, $verifiedAccount: String!) {
   createCustomer(userId: $userId, name: $name, emails: $emails, customerId: $customerId, payerId: $payerId, verifiedAccount: $verifiedAccount) {
@@ -889,25 +950,24 @@ export type CustomersQueryHookResult = ReturnType<typeof useCustomersQuery>;
 export type CustomersLazyQueryHookResult = ReturnType<typeof useCustomersLazyQuery>;
 export type CustomersQueryResult = ApolloReactCommon.QueryResult<CustomersQuery, CustomersQueryVariables>;
 export const CreateOrderDocument = gql`
-    mutation CreateOrder($partnerId: String!, $customerId: String!, $productId: String!, $name: String!, $price: Float!, $description: String!) {
-  createOrder(partnerId: $partnerId, customerId: $customerId, productId: $productId, name: $name, price: $price, description: $description) {
+    mutation CreateOrder($partnerId: String!, $customerId: String!, $productIds: String!, $name: String!, $price: Float!, $description: String!) {
+  createOrder(payerId: $partnerId, customerId: $customerId, productIds: $productIds, name: $name, price: $price, description: $description) {
     id
     name
     price
     description
     createdAt
-    partner {
-      id
-      clientId
-      name
-    }
     customer {
       id
       name
     }
-    product {
+    products {
       id
       name
+      partner {
+        id
+        name
+      }
     }
   }
 }
@@ -929,7 +989,7 @@ export type CreateOrderMutationFn = ApolloReactCommon.MutationFunction<CreateOrd
  *   variables: {
  *      partnerId: // value for 'partnerId'
  *      customerId: // value for 'customerId'
- *      productId: // value for 'productId'
+ *      productIds: // value for 'productIds'
  *      name: // value for 'name'
  *      price: // value for 'price'
  *      description: // value for 'description'
@@ -943,25 +1003,24 @@ export type CreateOrderMutationHookResult = ReturnType<typeof useCreateOrderMuta
 export type CreateOrderMutationResult = ApolloReactCommon.MutationResult<CreateOrderMutation>;
 export type CreateOrderMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateOrderMutation, CreateOrderMutationVariables>;
 export const OrdersDocument = gql`
-    query Orders {
-  orders {
+    query Orders($partnerId: String!) {
+  orders(partnerId: $partnerId) {
     id
     name
     price
     description
     createdAt
-    partner {
-      id
-      clientId
-      name
-    }
     customer {
       id
       name
     }
-    product {
+    products {
       id
       name
+      partner {
+        id
+        name
+      }
     }
   }
 }
@@ -979,6 +1038,7 @@ export const OrdersDocument = gql`
  * @example
  * const { data, loading, error } = useOrdersQuery({
  *   variables: {
+ *      partnerId: // value for 'partnerId'
  *   },
  * });
  */
@@ -1258,8 +1318,8 @@ export type CreateProductMutationHookResult = ReturnType<typeof useCreateProduct
 export type CreateProductMutationResult = ApolloReactCommon.MutationResult<CreateProductMutation>;
 export type CreateProductMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProductMutation, CreateProductMutationVariables>;
 export const ProductsDocument = gql`
-    query Products {
-  products {
+    query Products($partnerId: String!) {
+  products(partnerId: $partnerId) {
     id
     name
     price
@@ -1286,6 +1346,7 @@ export const ProductsDocument = gql`
  * @example
  * const { data, loading, error } = useProductsQuery({
  *   variables: {
+ *      partnerId: // value for 'partnerId'
  *   },
  * });
  */

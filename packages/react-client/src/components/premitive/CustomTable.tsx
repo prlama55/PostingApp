@@ -4,9 +4,6 @@ interface Props{
     title: string
     columns: any[],
     data: any[],
-    onAdd: (newData: any) => Promise<any>;
-    onRowUpdate:(newData: any, oldData?: any) => Promise<any>;
-    onRowDelete:(oldData: any) => Promise<any>;
 }
 class CustomTable extends Component<Props>{
     constructor(props: Props) {
@@ -14,17 +11,15 @@ class CustomTable extends Component<Props>{
     }
 
     render(){
-        const {title, columns, onAdd, onRowDelete, data} = this.props
+        const {title, columns, data} = this.props
         return (
             <MaterialTable
                 style={{ boxShadow: 'none' }}
                 title={title}
                 columns={columns}
                 data={data}
-                editable={{
-                    onRowAdd: onAdd,
-                    // onRowUpdate: onRowUpdate,
-                    onRowDelete: onRowDelete,
+                options={{
+                    search: true
                 }}
             />
         );
