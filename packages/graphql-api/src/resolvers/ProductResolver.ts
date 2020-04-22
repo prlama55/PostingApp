@@ -27,6 +27,7 @@ export class ProductResolver {
         @Arg('price') price: number,
         @Arg('description') description: string
     ): Promise<Product> {
+        if(!partnerId || partnerId==="") throw new Error('Please! complete your profile')
         const product = (await ProductModel.create({
             partnerId,
             name,

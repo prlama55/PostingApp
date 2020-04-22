@@ -19,7 +19,8 @@ class CustomTable extends Component<Props>{
                 columns={columns}
                 data={data}
                 options={{
-                    search: true
+                    search: true,
+                    exportButton: true
                 }}
             />
         );

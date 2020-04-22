@@ -27,9 +27,7 @@ export class LoginResolver {
     if (!validPassword) {
       throw new Error('Invalid password!')
     }
-    const refreshToken = await createRefreshToken(user)
-    const accessToken = await createAccessToken(user)
-    sendRefreshToken(res, refreshToken)
+
     let hasBusiness: boolean= false
     let businessUserId: string= ''
     if(user.userType==='BusinessUser'){
@@ -45,6 +43,9 @@ export class LoginResolver {
         businessUserId= customer.id
       }
     }
+    const refreshToken = await createRefreshToken(user)
+    const accessToken = await createAccessToken(user)
+    sendRefreshToken(res, refreshToken)
     return {
       email: user.email,
       accessToken: accessToken,

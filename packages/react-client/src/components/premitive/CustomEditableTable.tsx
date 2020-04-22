@@ -28,7 +28,8 @@ class CustomEditableTable extends Component<Props>{
                 }}
                 options={{
                     search: true,
-                    addRowPosition: 'first'
+                    addRowPosition: 'first',
+                    exportButton: true
                 }}
             />
         );

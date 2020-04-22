@@ -16,13 +16,14 @@ export class OrderResolver {
     @UseMiddleware(isAuth)
     @Query(() => [Order])
     async orders(@Arg('partnerId') partnerId: string){
-        const products= await ProductModel.find({partnerId: partnerId})
         const orders= await OrderModel.find()
-        const orderList= orders.filter(order=>{
-            return order.productIds.filter(id=>{
-                return products.filter(product=>{
-                    return id===product.id.toString()
-                })
+        let orderList:Order[]=[]
+            orders.map(order=>{
+             order.productIds.map(async id=>{
+                if(partnerId && partnerId!==""){
+                    const product= await ProductModel.find({_id: id,partnerId: partnerId})
+                    if(product) orderList.push(order)
+                }
             })
         })
         return orderList

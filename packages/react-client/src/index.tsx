@@ -87,25 +87,10 @@ const client = new ApolloClient({
           accessToken: accessToken,
         })
       },
-      handleError: err => {
-        console.warn('Your refresh token is invalid. Try to again')
-        console.error("err====",err)
-        setAppCredential({
-          id: '',
-          accessToken: '',
-          email: '',
-          role: '',
-          name: '',
-          businessUserId: '',
-          hasBusiness: false,
-        })
-        localStorage.removeItem('user')
-      },
+      handleError: _err => { },
     }),
     onError((errors) => {
       const {graphQLErrors, networkError}= errors
-      console.log(graphQLErrors)
-      console.log(networkError)
       let message=''
       let path
       if(graphQLErrors!==undefined) {
@@ -114,14 +99,11 @@ const client = new ApolloClient({
         if(graphQLErrors[0].path.length>0)path=graphQLErrors[0].path[0]
       }
       if(networkError!==undefined) message= "Network Error! Please try again"
-      console.log(message)
-      console.log(path)
       let redirectUrl='/'
       if (path==='login') {
         localStorage.removeItem('user')
           redirectUrl=`/login/?error=${message}`
       }else if(message==='Not authorized!'){
-        localStorage.removeItem('user')
         redirectUrl=`/login/?error=${message} Please login to continue`
       }else{
         redirectUrl=`/error/?errorMessage=${message}`
